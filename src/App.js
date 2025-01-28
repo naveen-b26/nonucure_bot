@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import "./App.css";
 
 function App() {
-  const [step, setStep] = useState(1);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,7 +12,6 @@ function App() {
     gender: "",
   });
   const [responses, setResponses] = useState({});
-  const [errors, setErrors] = useState({});
 
   const questionsByGender = {
     Male: [
@@ -24,6 +23,7 @@ function App() {
       {
         text: "Please select your hair stage:",
         name: "hairStage",
+        img: "/hair-men.jpg",
         options: [
           "Stage 1 (Slightly hair loss)",
           "Stage 2 (Hair line receding)",
@@ -88,43 +88,15 @@ function App() {
     ],
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = "Valid email is required";
-    if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone))
-      newErrors.phone = "Valid phone number is required (10 digits)";
-    if (!formData.age.trim() || parseInt(formData.age) < 18)
-      newErrors.age = "Age must be 18 or older";
-    if (!formData.gender.trim()) newErrors.gender = "Gender is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleNext = () => {
-    if (step === 1 && validateForm()) {
-      setStep(2);
-    } else if (step === 2) {
-      setStep(3);
-    } else if (step === 3) {
-      const questions = questionsByGender[formData.gender] || [];
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex((prev) => prev + 1);
-      } else {
-        alert("Form Submitted!");
-        console.log("Form Data:", formData);
-        console.log("Responses:", responses);
-      }
+    if (step < 2 + getGenderQuestions().length) {
+      setStep((prevStep) => prevStep + 1);
     }
   };
 
   const handlePrevious = () => {
-    if (step === 3 && currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
-    } else if (step > 1) {
-      setStep(step - 1);
+    if (step > 0) {
+      setStep((prevStep) => prevStep - 1);
     }
   };
 
@@ -137,11 +109,40 @@ function App() {
     }
   };
 
+  const getGenderQuestions = () => {
+    const { gender } = formData;
+    return questionsByGender[gender] || [];
+  };
+
   const renderStageContent = () => {
-    if (step === 1) {
+    if (step === 0) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <p className="text-lg mb-4 text-center">
+            Hi! I'm Noa. <br />
+            I'm here to assist you with your health assessment. <br />
+            May I have your details to proceed?
+          </p>
+          <motion.button
+            onClick={handleNext}
+            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 mt-4"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Sure, let's start!
+          </motion.button>
+        </motion.div>
+      );
+    } else if (step === 1) {
       return (
         <div>
-          <p className="text-lg mb-4 text-center">Hi! I'm  Noa<br></br>May I have your details to proceed? <br></br>Please enter your personal details:</p>
+          <p className="text-lg mb-4 text-center">
+            Please enter your personal details:
+          </p>
           <div className="mb-4">
             <label className="block text-sm font-medium">Name</label>
             <input
@@ -151,7 +152,6 @@ function App() {
               onChange={handleInputChange}
               className="w-full border rounded-lg px-3 py-2 mt-1"
             />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">Email</label>
@@ -162,7 +162,6 @@ function App() {
               onChange={handleInputChange}
               className="w-full border rounded-lg px-3 py-2 mt-1"
             />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">Phone</label>
@@ -173,7 +172,6 @@ function App() {
               onChange={handleInputChange}
               className="w-full border rounded-lg px-3 py-2 mt-1"
             />
-            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">Age</label>
@@ -184,7 +182,6 @@ function App() {
               onChange={handleInputChange}
               className="w-full border rounded-lg px-3 py-2 mt-1"
             />
-            {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">Gender</label>
@@ -198,28 +195,26 @@ function App() {
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
-            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
           </div>
         </div>
       );
-    } else if (step === 2) {
-      return (
-        <p className="text-lg">Thank you for your details! Click Next to proceed with the questionnaire.</p>
-      );
-    } else if (step === 3) {
-      const questions = questionsByGender[formData.gender] || [];
-      const currentQuestion = questions[currentQuestionIndex];
-
-      if (currentQuestion?.conditional && !currentQuestion.conditional(responses)) {
-        setCurrentQuestionIndex((prev) => prev + 1);
-        return null;
-      }
-
+    } else {
+      const questions = getGenderQuestions();
+      const currentQuestion = questions[step - 2];
+      if (!currentQuestion) return null;
+  
       return (
         <div>
-          <p className="mb-4">{currentQuestion.text}</p>
-          {currentQuestion.options.map((option, idx) => (
-            <label key={idx} className="block mb-2">
+          <p className="text-lg mb-4">{currentQuestion.text}</p>
+          {currentQuestion.img && (
+            <img
+              src={currentQuestion.img}
+              alt="Question related illustration"
+              className="w-full h-auto mb-4 rounded-lg shadow-md"
+            />
+          )}
+          {currentQuestion.options.map((option, index) => (
+            <label key={index} className="block mb-2">
               <input
                 type="radio"
                 name={currentQuestion.name}
@@ -235,32 +230,72 @@ function App() {
       );
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center h-screen mt-16">
-      <span className="bg-green-300 w-full sm:w-[600px] text-green-600 font-bold text-center text-2xl font-mono rounded-tr-xl rounded-tl-xl p-3">
+      {/* Navbar Heading */}
+      <div className="bg-green-300 w-full sm:w-[600px] text-green-600 font-bold text-center text-2xl font-mono rounded-tr-xl rounded-tl-xl p-3">
         Self Assessment
-      </span>
-      <div className="bg-white shadow-lg rounded-lg w-full sm:w-[600px] p-6">
-        {renderStageContent()}
-        <div className="mt-6 flex justify-between">
-          {step > 1 && (
-            <button
-              onClick={handlePrevious}
-              className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
-            >
-              Back
-            </button>
-          )}
+      </div>
+
+      {/* Main Box */}
+      <div className="bg-white shadow-lg rounded-lg w-full sm:w-[600px]">
+        {/* Navbar */}
+        <div className="flex justify-around p-4 border-b">
           <button
-            onClick={handleNext}
-            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+            className={`py-2 text-gray-600 ${
+              step === 1 ? "border-b-2 border-green-500" : ""
+            }`}
+            onClick={() => setStep(1)}
           >
-            {step === 3 && currentQuestionIndex === (questionsByGender[formData.gender]?.length || 0) - 1
-              ? "Submit"
-              : "Next"}
+            Personal Info
+          </button>
+          <button
+            className={`py-2 text-gray-600 ${
+              step === 2 ? "border-b-2 border-green-500" : ""
+            }`}
+            onClick={() => setStep(2)}
+          >
+            Problem Concern
+          </button>
+          <button
+            className={`py-2 text-gray-600 ${
+              step > 2 ? "border-b-2 border-green-500" : ""
+            }`}
+            onClick={() => setStep(3)}
+          >
+            Questions
           </button>
         </div>
+
+        {/* Content */}
+        <motion.div
+          className="p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {renderStageContent()}
+
+          {/* Navigation Buttons */}
+          <div className="mt-6 flex justify-between">
+            {step > 0 && (
+              <button
+                onClick={handlePrevious}
+                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+              >
+                Back
+              </button>
+            )}
+            <button
+              onClick={handleNext}
+              className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+            >
+              {step === 1 + getGenderQuestions().length ? "Submit" : "Next"}
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
