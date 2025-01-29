@@ -120,144 +120,144 @@ function App() {
   };
 
   const renderStageContent = () => {
-  const questions = getGenderQuestions();
-
-  if (step === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <p className="text-lg mb-4 text-center">
-          Hi! I'm Noa. <br />
-          I'm here to assist you with your health assessment. <br />
-          May I have your details to proceed?
-        </p>
-        <motion.button
-          onClick={handleNext}
-          className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 mt-4"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+    const questions = getGenderQuestions();
+  
+    if (step === 0) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          Sure, let's start!
-        </motion.button>
-      </motion.div>
-    );
-  } else if (step === 1) {
-    return (
-      <div>
-        <p className="text-lg mb-4 text-center">
-          Please enter your personal details:
-        </p>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2 mt-1"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2 mt-1"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Phone</label>
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2 mt-1"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Age</label>
-          <input
-            type="number"
-            name="age"
-            value={formData.age}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2 mt-1"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Gender</label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2 mt-1"
+          <p className="text-lg mb-4 text-center">
+            Hi! I'm Noa. <br />
+            I'm here to assist you with your health assessment. <br />
+            May I have your details to proceed?
+          </p>
+          <motion.button
+            onClick={handleNext}
+            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 mt-4"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-      </div>
-    );
-  } else if (step <= 1 + questions.length) {
-    const currentQuestion = questions[step - 2];
-    if (!currentQuestion) return null;
-
-    // Check if we should skip the dandruff stage question
-    if (currentQuestion.name === "dandruffStage" && responses.dandruff !== "Yes") {
-      // Move to the next question
-      return null; 
-    }
-
-    return (
-      <div>
-        <p className="text-lg mb-4">{currentQuestion.text}</p>
-        {currentQuestion.img && (
-          <img
-            src={currentQuestion.img}
-            alt="Question related illustration"
-            className="w-full h-auto mb-4 rounded-lg shadow-md"
-          />
-        )}
-        {currentQuestion.options.map((option, index) => (
-          <label key={index} className="block mb-2">
+            Sure, let's start!
+          </motion.button>
+        </motion.div>
+      );
+    } else if (step === 1) {
+      return (
+        <div>
+          <p className="text-lg mb-4 text-center">
+            Please enter your personal details:
+          </p>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Name</label>
             <input
-              type="radio"
-              name={currentQuestion.name}
-              value={option}
-              checked={responses[currentQuestion.name] === option}
+              type="text"
+              name="name"
+              value={formData.name}
               onChange={handleInputChange}
-              className="mr-2"
+              className="w-full border rounded-lg px-3 py-2 mt-1"
             />
-            {option}
-          </label>
-        ))}
-      </div>
-    );
-  } else {
-    // This block displays the summary only at the last step
-    return (
-      <div className="text-center">
-        <p className="text-lg mb-4">Thank you for answering the questions!</p>
-        <p className="text-md mb-2">Here's a summary of your responses:</p>
-        <ul className="list-disc list-inside mb-4">
-          {Object.entries(responses).map(([key, value], index) => (
-            <li key={index} className="text-left">
-              <strong>{key}:</strong> {value}
-            </li>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full border rounded-lg px-3 py-2 mt-1"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full border rounded-lg px-3 py-2 mt-1"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Age</label>
+            <input
+              type="number"
+              name="age"
+              value={formData.age}
+              onChange={handleInputChange}
+              className="w-full border rounded-lg px-3 py-2 mt-1"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              className="w-full border rounded-lg px-3 py-2 mt-1"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+        </div>
+      );
+    } else if (step <= 1 + questions.length) {
+      const currentQuestion = questions[step - 2];
+      if (!currentQuestion) return null;
+  
+      // Check if we should skip the dandruff stage question
+      if (currentQuestion.name === "dandruffStage" && responses.dandruff !== "Yes") {
+        // Move to the next question
+        return null; 
+      }
+  
+      return (
+        <div>
+          <p className="text-lg mb-4">{currentQuestion.text}</p>
+          {currentQuestion.img && (
+            <img
+              src={currentQuestion.img}
+              alt="Question related illustration"
+              className="w-full h-auto mb-4 rounded-lg shadow-md"
+            />
+          )}
+          {currentQuestion.options.map((option, index) => (
+            <label key={index} className="block mb-2">
+              <input
+                type="radio"
+                name={currentQuestion.name}
+                value={option}
+                checked={responses[currentQuestion.name] === option}
+                onChange={handleInputChange}
+                className="mr-2"
+              />
+              {option}
+            </label>
           ))}
-        </ul>
-        <p className="text-md mb-4">You can review and submit your information now.</p>
-      </div>
-    );
-  }
-};
+        </div>
+      );
+    } else {
+      // This block displays the summary only at the last step
+      return (
+        <div className="text-center">
+          <p className="text-lg mb-4">Thank you for answering the questions!</p>
+          <p className="text-md mb-2">Here's a summary of your responses:</p>
+          <ul className="list-disc list-inside mb-4">
+            {Object.entries(responses).map(([key, value], index) => (
+              <li key={index} className="text-left">
+                <strong>{key}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+          <p className="text-md mb-4">You can review and submit your information now.</p>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col items-center h-screen mt-16">
