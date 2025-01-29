@@ -44,7 +44,6 @@ function App() {
         text: "Select your dandruff stage:",
         name: "dandruffStage",
         options: ["Low", "Mild", "Moderate", "Severe"],
-        conditional: (responses) => responses.dandruff === "Yes",
       },
       {
         text: "Are you experiencing hair thinning or bald spots?",
@@ -91,6 +90,12 @@ function App() {
   const handleNext = () => {
     if (step < 2 + getGenderQuestions().length) {
       setStep((prevStep) => prevStep + 1);
+    } else {
+      if (responses.healthConcern === "Beard Growth") {
+        alert("No questions related to Beard Growth. Please select another concern to submit.");
+      } else {
+        alert("Form Submitted Successfully!");
+      }
     }
   };
 
@@ -115,6 +120,8 @@ function App() {
   };
 
   const renderStageContent = () => {
+    const questions = getGenderQuestions();
+  
     if (step === 0) {
       return (
         <motion.div
@@ -198,10 +205,15 @@ function App() {
           </div>
         </div>
       );
-    } else {
-      const questions = getGenderQuestions();
+    } else if (step <= 1 + questions.length) {
       const currentQuestion = questions[step - 2];
       if (!currentQuestion) return null;
+  
+      // Check if we should skip the dandruff stage question
+      if (currentQuestion.name === "dandruffStage" && responses.dandruff !== "Yes") {
+        // Move to the next question
+        return null; 
+      }
   
       return (
         <div>
@@ -228,9 +240,24 @@ function App() {
           ))}
         </div>
       );
+    } else {
+      // This block displays the summary only at the last step
+      return (
+        <div className="text-center">
+          <p className="text-lg mb-4">Thank you for answering the questions!</p>
+          <p className="text-md mb-2">Here's a summary of your responses:</p>
+          <ul className="list-disc list-inside mb-4">
+            {Object.entries(responses).map(([key, value], index) => (
+              <li key={index} className="text-left">
+                <strong>{key}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+          <p className="text-md mb-4">You can review and submit your information now.</p>
+        </div>
+      );
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center h-screen mt-16">
