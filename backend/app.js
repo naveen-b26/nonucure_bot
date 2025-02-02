@@ -22,34 +22,28 @@ mongoose.connect(`${link}/chatbot_nonu`, {
 
 // POST endpoint to submit the form
 app.post('/submit-form', async (req, res) => {
-  const { formData, responses } = req.body;
-
   try {
-    // Save user data first
-    const user = new User({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      age: formData.age,
-      gender: formData.gender,
-    });
+    const { formData, responses } = req.body;
 
+    if (!formData || !responses) {
+      return res.status(400).json({ error: 'Missing form data or responses' });
+    }
+
+    // Save user data
+    const user = new User(formData);
     const savedUser = await user.save();
 
-    // Now save answers data with the userId reference
-    const answers = new Answer({
-      userId: savedUser._id, // Reference to the saved user
-      ...responses,
-    });
-
-    await answers.save();
+    // Save responses with userId reference
+    const answer = new Answer({ userId: savedUser._id, ...responses });
+    await answer.save();
 
     res.status(200).json({ message: 'Form submitted successfully' });
   } catch (error) {
-    console.error('Error submitting form data:', error);
-    res.status(500).json({ error: 'Failed to submit form' });
+    console.error('Error submitting form:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 const PORT = 5000;
 app.listen(PORT, () => {

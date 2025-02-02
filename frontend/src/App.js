@@ -456,7 +456,7 @@ function App() {
   
     try {
       // Send data to the backend
-      const response = await axios.post('http://localhost:5000/submit-form', {
+      const response = await axios.post('http://localhost:5000/api/submit-form', {
         formData,
         responses,
       });
