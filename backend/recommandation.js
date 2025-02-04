@@ -12,7 +12,7 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 const userSchema = new mongoose.Schema({
-  stage: Number,
+  stage: String, // Use String for hair stages
   dandruffLevel: String,
   energyLevel: String,
   wantsFinibis: Boolean
@@ -24,21 +24,25 @@ app.post('/recommend', async (req, res) => {
   const { stage, dandruffLevel, energyLevel, wantsFinibis } = req.body;
   let recommendation = {};
 
-  if (stage === 1 || stage === 2) {
+  // Adjusted stage logic based on the string options you provided
+  if (stage === "Stage 1 (Slightly hair loss)" || stage === "Stage 2 (Hair line receding)") {
     recommendation.kit = 'Classic Kit';
     recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-  } else if (stage === 3 || stage === 4) {
+  } else if (stage === "Stage 3 (Developing bald spot)" || stage === "Stage 4 (Visible bald spot)") {
     recommendation.kit = 'Complete Hair Kit';
     recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+    if (wantsFinibis) {
+      recommendation.products.push('Finibis');
+    }
+  } else if (stage === "Stage 5 (Balding from crown area)" || stage === "Stage 6 (Advanced balding)" || stage === "Heavy Hair Fall" || stage === "Coin Size Patch") {
+    recommendation.kit = 'Hair Restoration Kit';
+    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
     if (wantsFinibis) {
       recommendation.products.push('Finibis');
     }
   } else if (dandruffLevel) {
     recommendation.kit = 'Anti-Dandruff Kit';
     recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
-  } else if (stage === 1 || stage === 2) {
-    recommendation.kit = 'Active Hair Growth Kit';
-    recommendation.products = ['Gummies', 'Shampoo', 'Hair Growth Serum'];
   } else {
     return res.json({ message: 'No treatment for Stage 5, consult a hair doctor' });
   }

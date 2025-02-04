@@ -6,9 +6,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Uncomment to enable routing
 
 function Form() {
-  const { formData, setFormData } = useStore(); // Get state and updater function from Zustand store
+  const { formData, setFormData, setResponses } = useStore(); // Get state and updater function from Zustand store
   const [step, setStep] = React.useState(0);
-  const [responses, setResponses] = React.useState({});
+  const [responses, setResponsesState] = React.useState({});
   const navigate = useNavigate(); // Initialize useNavigate
   const questionsByGender = {
     Male: [
@@ -105,8 +105,8 @@ function Form() {
   };
 
   const handleSubmit = async () => {
-    const fullFormData = { ...formData, ...responses };
-    console.log("Submitting form data:", fullFormData);
+    console.log("Form Data:", formData);
+    console.log("Responses:", responses);
 
     try {
       const response = await axios.post("http://localhost:5000/api/submit-form", {
@@ -114,11 +114,9 @@ function Form() {
         responses,
       });
 
-      console.log(response.data); // Success message from the server
+      console.log(response.data);
       alert("Form Submitted Successfully!");
-
-      // Redirect to the Recommendation Page after successful submission
-      navigate("/recommendation"); // Navigate to a different page (use your routing as required)
+      navigate("/recommendation");
     } catch (error) {
       console.error("Error submitting form data:", error);
       alert("Error submitting form data. Please try again.");
@@ -134,9 +132,10 @@ function Form() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (step === 1) {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ [name]: value });  // This will merge with existing formData
     } else {
-      setResponses({ ...responses, [name]: value });
+      setResponsesState({ ...responses, [name]: value });  // Local state
+      setResponses({ [name]: value });  // Store state
     }
   };
 

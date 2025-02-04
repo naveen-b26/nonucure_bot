@@ -4,42 +4,51 @@ import useStore from './store'; // Zustand store
 import axios from 'axios';
 
 const RecommendationPage = () => {
-  const { formData, responses } = useStore(); // Access form data and responses from Zustand
+  const { formData, responses } = useStore();
   const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  console.log(formData)
+  
   useEffect(() => {
-    if (!formData && !responses) {
-      navigate('/'); // Redirect back to the form if there's no data
+    // Check if we have the required data
+    if (!formData || !responses) {
+      console.log('Missing form data, redirecting to form');
+      navigate('/');
+      return;
     }
-  }, [formData, responses, navigate]);
+
+    fetchRecommendation();
+  }, []); // Run once on mount
 
   const fetchRecommendation = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/recommend', {
-        ...formData, // Send all form data
-        ...responses, // Send all responses to the backend
-      });
+      const requestData = {
+        stage: formData.hairStage ||responses.hairStage,
+        dandruffLevel: formData.dandruffStage || responses.dandruffLevel,
+        energyLevel: formData.energyLevels || responses.energyLevels,
+      };
 
-      setRecommendation(response.data); // Store the response (recommendation)
+      console.log('Sending request with data:', requestData);
+      
+      const response = await axios.post('http://localhost:5000/api/recommend', requestData);
+      
+      if (response.data.message) {
+        setError(response.data.message);
+        setRecommendation(null);
+      } else {
+        setRecommendation(response.data);
+      }
     } catch (error) {
+      console.error('Recommendation error:', error);
       setError('Error fetching recommendation. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
-
-  // Trigger recommendation fetch on component mount
-  useEffect(() => {
-    if (formData && responses) {
-      fetchRecommendation();
-    }
-  }, [formData, responses]);
 
   if (loading) return <div className="text-center text-xl">Loading...</div>;
 
@@ -53,7 +62,7 @@ const RecommendationPage = () => {
         <div className="bg-white shadow-lg rounded-lg p-6 w-full sm:w-[600px]">
           <h2 className="text-xl font-semibold text-green-700 mb-4">Recommended Kit: {recommendation.kit}</h2>
           <ul className="list-disc pl-6 text-lg">
-            {recommendation.products.map((product, index) => (
+            {recommendation.products?.map((product, index) => (
               <li key={index} className="mb-2">{product}</li>
             ))}
           </ul>
