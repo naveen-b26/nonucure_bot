@@ -38,32 +38,8 @@ const answerSchema = new mongoose.Schema(
   { timestamps: true, collection: "Answers_for_Hair" }
 );
 
-const recommendationSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  kit: {
-    type: String,
-    required: true
-  },
-  products: [{
-    type: String,
-    required: true
-  }],
-  stage: String,
-  dandruffLevel: String,
-  energyLevel: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
-
 // Create Models
 const User = mongoose.model("User", userSchema);
 const Answer = mongoose.model("Answer", answerSchema);
-const Recommendation = mongoose.model('Recommendation', recommendationSchema);
 
-module.exports = { User, Answer, Recommendation };
+module.exports = { User, Answer };

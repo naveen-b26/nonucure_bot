@@ -34,7 +34,7 @@ const RecommendationPage = () => {
 
       console.log('Sending request with data:', requestData);
       
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/recommend`, requestData);
+      const response = await axios.post('http://localhost:5000/api/recommend', requestData);
       
       if (response.data.message) {
         setError(response.data.message);
