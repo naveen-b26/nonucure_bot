@@ -1,7 +1,8 @@
 const express = require('express');
-const { User, Answer } = require('./models');
+const { User, Answer, Recommendation } = require('./models');
+const { default: useStore } = require('../frontend/src/store');
 const router = express.Router();
-
+const [userId,setUserId]=useState(null)
 // Submit Form Route
 router.post("/submit-form", async (req, res) => {
   try {
@@ -117,42 +118,64 @@ router.post("/submit-form", async (req, res) => {
 
 // Recommend Route
 router.post('/recommend', async (req, res) => {
-  const { stage, dandruffLevel, energyLevel } = req.body;
-  let recommendation = {};
+  try {
+    const { userId, stage, dandruffLevel, energyLevel } = req.body;
+    let recommendation = {};
 
-  // Adjusted stage logic based on the string options you provided
-  if (stage === "Stage 1 (Slightly hair loss)" || stage === "Stage 2 (Hair line receding)") {
-    recommendation.kit = 'Classic Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-  } else if (stage === "Stage 3 (Developing bald spot)" || stage === "Stage 4 (Visible bald spot)") {
-    recommendation.kit = 'Complete Hair Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-    // if (wantsFinibis) {
-    //   recommendation.products.push('Finibis');
-    // }
-  } else if (stage === "Stage 5 (Balding from crown area)" || stage === "Stage 6 (Advanced balding)" || stage === "Heavy Hair Fall" || stage === "Coin Size Patch") {
-    recommendation.kit = 'Hair Restoration Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
-    // if (wantsFinibis) {
-    //   recommendation.products.push('Finibis');
-    // }
-  } else if (dandruffLevel && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffLevel)) {
-    recommendation.kit = 'Anti-Dandruff Kit';
-    recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
-    
-    // Add extra products for severe cases
-    if (dandruffLevel === 'Severe') {
-      recommendation.products.push('Anti-Dandruff Serum');
+    // Adjusted stage logic based on the string options you provided
+    if (stage === "Stage 1 (Slightly hair loss)" || stage === "Stage 2 (Hair line receding)") {
+      recommendation.kit = 'Classic Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+    } else if (stage === "Stage 3 (Developing bald spot)" || stage === "Stage 4 (Visible bald spot)") {
+      recommendation.kit = 'Complete Hair Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+      // if (wantsFinibis) {
+      //   recommendation.products.push('Finibis');
+      // }
+    } else if (stage === "Stage 5 (Balding from crown area)" || stage === "Stage 6 (Advanced balding)" || stage === "Heavy Hair Fall" || stage === "Coin Size Patch") {
+      recommendation.kit = 'Hair Restoration Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
+      // if (wantsFinibis) {
+      //   recommendation.products.push('Finibis');
+      // }
+    } else if (dandruffLevel && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffLevel)) {
+      recommendation.kit = 'Anti-Dandruff Kit';
+      recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
+      
+      // Add extra products for severe cases
+      if (dandruffLevel === 'Severe') {
+        recommendation.products.push('Anti-Dandruff Serum');
+      }
+    } else {
+      return res.json({ message: 'No treatment for Stage 5, consult a hair doctor' });
     }
-  } else {
-    return res.json({ message: 'No treatment for Stage 5, consult a hair doctor' });
-  }
 
-  if (energyLevel?.toLowerCase() === 'low') {
-    recommendation.products.push('Shilajit');
-  }
+    if (energyLevel?.toLowerCase() === 'low') {
+      recommendation.products.push('Shilajit');
+    }
 
-  res.json(recommendation);
+    // Store recommendation in database
+    const recommendationDoc = new Recommendation({
+      userId,
+      kit: recommendation.kit,
+      products: recommendation.products,
+      stage,
+      dandruffLevel,
+      energyLevel
+    });
+
+    const savedRecommendation = await recommendationDoc.save();
+    console.log("✅ Recommendation Saved:", savedRecommendation);
+
+    // Send back both the recommendation and the saved document id
+    res.json({
+      ...recommendation,
+      recommendationId: savedRecommendation._id
+    });
+  } catch (error) {
+    console.error("❌ Error saving recommendation to MongoDB:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
