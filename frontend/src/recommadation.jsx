@@ -27,9 +27,12 @@ const RecommendationPage = () => {
 
     try {
       const requestData = {
-        stage: formData.hairStage ||responses.hairStage,
-        dandruffLevel: formData.dandruffStage || responses.dandruffLevel,
-        energyLevel: formData.energyLevels || responses.energyLevels,
+        userId: formData._id, // Get from stored user data
+        gender: formData.gender,
+        hairStage: formData.hairStage || responses.hairStage,
+        dandruff: formData.dandruff || responses.dandruff,
+        dandruffStage: formData.dandruffStage || responses.dandruffStage,
+        energyLevels: formData.energyLevels || responses.energyLevels,
       };
 
       console.log('Sending request with data:', requestData);

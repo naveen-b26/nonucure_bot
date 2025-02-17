@@ -23,6 +23,8 @@ const useStore = create(
         mainConcern: "",
       },
       responses: {},
+      userId: null,
+      setUserId: (id) => set({ userId: id }),
       setFormData: (data) => set((state) => ({ 
         formData: { ...state.formData, ...data } 
       })),
@@ -47,7 +49,8 @@ const useStore = create(
           hairFall: "",
           mainConcern: "",
         }, 
-        responses: {} 
+        responses: {},
+        userId: null
       }),
     }),
     {

@@ -1,114 +1,46 @@
 const express = require('express');
-const { User, Answer } = require('./models');
+const { MaleUser, FemaleUser, Recommendation } = require('./models');
 const router = express.Router();
 
 // Submit Form Route
 router.post("/submit-form", async (req, res) => {
   try {
     console.log("Received Request Body:", req.body);
-
     const { formData, responses } = req.body;
 
     if (!formData || !responses) {
       return res.status(400).json({ error: "Missing form data or responses" });
     }
 
-    // Gender-based Question Handling
     const { gender } = formData;
+    let savedUser;
 
-    // Define male and female specific questions (You can replace these with dynamic question generation if needed)
-    const maleQuestions = [
-      {
-        text: "Select your primary health concern:",
-        name: "healthConcern",
-        options: ["Hair Loss", "Sexual Health", "Beard Growth"],
-      },
-      {
-        text: "Please select your hair stage:",
-        name: "hairStage",
-        img: "/hair-men.jpg",
-        options: [
-          "Stage 1 (Slightly hair loss)",
-          "Stage 2 (Hair line receding)",
-          "Stage 3 (Developing bald spot)",
-          "Stage 4 (Visible bald spot)",
-          "Stage 5 (Balding from crown area)",
-          "Stage 6 (Advanced balding)",
-          "Heavy Hair Fall",
-          "Coin Size Patch",
-        ],
-      },
-      {
-        text: "Do you have dandruff?",
-        name: "dandruff",
-        options: ["Yes", "No"],
-      },
-      {
-        text: "Select your dandruff stage:",
-        name: "dandruffStage",
-        options: ["Low", "Mild", "Moderate", "Severe"],
-      },
-      {
-        text: "Are you experiencing hair thinning or bald spots?",
-        name: "thinningOrBaldSpots",
-        options: [
-          "Yes, both",
-          "Yes, thinning only",
-          "Yes, bald spots only",
-          "No",
-          "I'm not sure",
-        ],
-      },
-      {
-        text: "How would you rate your energy levels?",
-        name: "energyLevels",
-        options: ["High", "Medium", "Low"],
-      },
-    ];
+    // Combine formData and responses
+    const userData = {
+      ...formData,
+      ...responses
+    };
 
-    const femaleQuestions = [
-      {
-        text: "What does your hair look like naturally?",
-        name: "naturalHair",
-        options: ["Straight", "Curly", "Wavy", "Coily"],
-      },
-      {
-        text: "What is your current goal?",
-        name: "goal",
-        options: ["Control hair fall", "Regrow Hair"],
-      },
-      {
-        text: "Do you feel more hair fall than usual?",
-        name: "hairFall",
-        options: ["Yes, extreme", "Mild", "No"],
-      },
-      {
-        text: "Choose your main concern:",
-        name: "mainConcern",
-        options: [
-          "Hair thinning",
-          "Coin size patches",
-          "Medium widening",
-          "Advanced widening",
-          "Less volume on sides",
-        ],
-      },
-    ];
+    // Store in appropriate collection based on gender
+    if (gender === 'Male') {
+      const maleUser = new MaleUser(userData);
+      savedUser = await maleUser.save();
+      console.log("✅ Male User Saved:", savedUser);
+    } else if (gender === 'Female') {
+      const femaleUser = new FemaleUser(userData);
+      savedUser = await femaleUser.save();
+      console.log("✅ Female User Saved:", savedUser);
+    } else {
+      return res.status(400).json({ error: "Invalid gender specified" });
+    }
 
-    // Set the appropriate set of questions based on gender
-    const questions = gender === 'Male' ? maleQuestions : femaleQuestions;
+    // Store the user ID in the store for later use
+    res.status(200).json({ 
+      message: "Form submitted successfully",
+      userId: savedUser._id,
+      gender: savedUser.gender
+    });
 
-    // Save user data (in 'users' collection)
-    const user = new User(formData);
-    const savedUser = await user.save();
-    console.log("✅ User Saved:", savedUser);
-
-    // Save answers (in 'Answers_for_Hair' collection)
-    const answer = new Answer({ userId: savedUser._id, ...responses });
-    const savedAnswer = await answer.save();
-    console.log("✅ Answer Saved in Answers_for_Hair:", savedAnswer);
-
-    res.status(200).json({ message: "Form submitted successfully" });
   } catch (error) {
     console.error("❌ Error saving data to MongoDB:", error);
     res.status(500).json({ error: error.message });
@@ -117,42 +49,98 @@ router.post("/submit-form", async (req, res) => {
 
 // Recommend Route
 router.post('/recommend', async (req, res) => {
-  const { stage, dandruffLevel, energyLevel } = req.body;
-  let recommendation = {};
-
-  // Adjusted stage logic based on the string options you provided
-  if (stage === "Stage 1 (Slightly hair loss)" || stage === "Stage 2 (Hair line receding)") {
-    recommendation.kit = 'Classic Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-  } else if (stage === "Stage 3 (Developing bald spot)" || stage === "Stage 4 (Visible bald spot)") {
-    recommendation.kit = 'Complete Hair Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-    // if (wantsFinibis) {
-    //   recommendation.products.push('Finibis');
-    // }
-  } else if (stage === "Stage 5 (Balding from crown area)" || stage === "Stage 6 (Advanced balding)" || stage === "Heavy Hair Fall" || stage === "Coin Size Patch") {
-    recommendation.kit = 'Hair Restoration Kit';
-    recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
-    // if (wantsFinibis) {
-    //   recommendation.products.push('Finibis');
-    // }
-  } else if (dandruffLevel && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffLevel)) {
-    recommendation.kit = 'Anti-Dandruff Kit';
-    recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
+  try {
+    const { userId, gender, hairStage, dandruff, dandruffStage, energyLevels } = req.body;
+    console.log(userId,gender);
     
-    // Add extra products for severe cases
-    if (dandruffLevel === 'Severe') {
-      recommendation.products.push('Anti-Dandruff Serum');
+    // Validate user exists in appropriate collection
+    const UserModel = gender === 'Male' ? MaleUser : FemaleUser;
+    const user = await UserModel.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  } else {
-    return res.json({ message: 'No treatment for Stage 5, consult a hair doctor' });
-  }
 
-  if (energyLevel?.toLowerCase() === 'low') {
-    recommendation.products.push('Shilajit');
-  }
+    let recommendation = {};
 
-  res.json(recommendation);
+    // Hair Stage Conditions
+    if (hairStage === "Stage 2 (Hair line receding)" || hairStage === "Stage 1 (Slightly hair loss)") {
+      recommendation.kit = 'Classic Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+    } else if (hairStage === "Stage 3 (Developing bald spot)" || hairStage === "Stage 4 (Visible bald spot)") {
+      recommendation.kit = 'Complete Hair Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+    } else if (hairStage === "Stage 5 (Balding from crown area)" || 
+               hairStage === "Stage 6 (Advanced balding)" || 
+               hairStage === "Heavy Hair Fall" || 
+               hairStage === "Coin Size Patch") {
+      recommendation.kit = 'Hair Restoration Kit';
+      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
+    }
+
+    // Dandruff Conditions
+    if (dandruff === "Yes" && dandruffStage && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffStage)) {
+      if (!recommendation.kit) {
+        recommendation.kit = 'Anti-Dandruff Kit';
+        recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
+      }
+      if (dandruffStage === 'Severe') {
+        recommendation.products.push('Anti-Dandruff Serum');
+      }
+    }
+
+    // Energy Levels
+    if (energyLevels === 'Medium' || energyLevels === 'Low') {
+      recommendation.products.push('Shilajit');
+    }
+
+    // Ensure kit is always assigned
+    if (!recommendation.kit) {
+      recommendation.kit = 'General Hair Care Kit';
+      recommendation.products = ['Gummies', 'Shampoo'];
+    }
+
+    // Save the recommendation
+    const recommendationDoc = new Recommendation({
+      userId,
+      userGender: gender,
+      kit: recommendation.kit,
+      products: recommendation.products,
+      hairStage,
+      dandruffStage,
+      energyLevels
+    });
+
+    const savedRecommendation = await recommendationDoc.save();
+    console.log("✅ Recommendation Saved:", savedRecommendation);
+
+    res.json({
+      ...recommendation,
+      recommendationId: savedRecommendation._id
+    });
+
+  } catch (error) {
+    console.error("❌ Error in recommendation:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Get recommendations by userId and gender
+router.get('/recommendations/:userId/:gender', async (req, res) => {
+  try {
+    const { userId, gender } = req.params;
+    
+    const recommendations = await Recommendation.find({ 
+      userId, 
+      userGender: gender 
+    }).sort({ createdAt: -1 });
+    
+    res.json(recommendations);
+  } catch (error) {
+    console.error("❌ Error fetching recommendations:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

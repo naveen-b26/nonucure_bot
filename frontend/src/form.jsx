@@ -115,6 +115,13 @@ function Form() {
       });
 
       console.log(response.data);
+      
+      // Store the userId and gender from the response
+      setFormData({
+        ...formData,
+        _id: response.data.userId,
+      });
+
       alert("Form Submitted Successfully!");
       navigate("/recommendation");
     } catch (error) {

@@ -1,45 +1,69 @@
 const mongoose = require("mongoose");
 
-// Define User Schema (Stores in 'users' collection)
-const userSchema = new mongoose.Schema(
+// Base User Schema (common fields for both male and female)
+const baseUserSchema = {
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String, required: true },
+  age: { type: Number, required: true },
+  gender: { type: String, required: true },
+};
+
+// Male User Schema
+const maleUserSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    age: { type: Number, required: true },
-    gender: { type: String, required: true }, // Male or Female
+    ...baseUserSchema,
+    healthConcern: { type: String, required: true },
+    hairStage: { type: String },
+    dandruff: { type: String },
+    dandruffStage: { type: String },
+    thinningOrBaldSpots: { type: String },
+    energyLevels: { type: String },
   },
-  { timestamps: true, collection: "users" }
+  { timestamps: true, collection: "male_users" }
 );
 
-// Define Answer Schema (Stores in 'Answers_for_Hair' collection)
-const answerSchema = new mongoose.Schema(
+// Female User Schema
+const femaleUserSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    
-    // Male-specific questions
-    healthConcern: { type: String, required: true }, // Required for both Male and Female
-    hairStage: { type: String }, // Required for Male
-    dandruff: { type: String }, // Required for Male
-    dandruffStage: { type: String }, // Required for Male
-    thinningOrBaldSpots: { type: String }, // Required for Male
-    energyLevels:{type:String},
-    
-    // Female-specific questions
-    naturalHair: { type: String }, // Optional for Female
-    goal: { type: String }, // Optional for Female
-    hairFall: { type: String }, // Optional for Female
-    mainConcern: { type: String }, // Optional for Female
-    
-    // Optionally include an image for Male's hair stage
-    hairStageImage: { type: String }, // URL of image, only for Male
-
+    ...baseUserSchema,
+    naturalHair: { type: String },
+    goal: { type: String },
+    hairFall: { type: String },
+    mainConcern: { type: String },
   },
-  { timestamps: true, collection: "Answers_for_Hair" }
+  { timestamps: true, collection: "female_users" }
 );
 
-// Create Models
-const User = mongoose.model("User", userSchema);
-const Answer = mongoose.model("Answer", answerSchema);
+// Recommendation Schema
+const recommendationSchema = new mongoose.Schema(
+  {
+    userId: { 
+      type: mongoose.Schema.Types.ObjectId,
+      required: true 
+    },
+    userGender: { 
+      type: String, 
+      required: true,
+      enum: ['Male', 'Female']
+    },
+    kit: { 
+      type: String, 
+      required: true 
+    },
+    products: [{ 
+      type: String, 
+      required: true 
+    }],
+    stage: String,
+    dandruffLevel: String,
+    energyLevel: String
+  },
+  { timestamps: true, collection: "recommendations" }
+);
 
-module.exports = { User, Answer };
+const MaleUser = mongoose.model("MaleUser", maleUserSchema);
+const FemaleUser = mongoose.model("FemaleUser", femaleUserSchema);
+const Recommendation = mongoose.model("Recommendation", recommendationSchema);
+
+module.exports = { MaleUser, FemaleUser, Recommendation };
