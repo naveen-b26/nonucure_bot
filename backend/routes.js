@@ -50,57 +50,79 @@ router.post("/submit-form", async (req, res) => {
 // Recommend Route
 router.post('/recommend', async (req, res) => {
   try {
-    const { userId, gender, hairStage, dandruff, dandruffStage, energyLevels } = req.body;
-    console.log(userId,gender);
-    
+    const { userId, gender, hairStage, dandruff, dandruffStage, energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
+    console.log(userId, gender);
+
     // Validate user exists in appropriate collection
     const UserModel = gender === 'Male' ? MaleUser : FemaleUser;
     const user = await UserModel.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     let recommendation = {};
 
-    // Hair Stage Conditions
-    if (hairStage === "Stage 2 (Hair line receding)" || hairStage === "Stage 1 (Slightly hair loss)") {
-      recommendation.kit = 'Classic Kit';
-      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-    } else if (hairStage === "Stage 3 (Developing bald spot)" || hairStage === "Stage 4 (Visible bald spot)") {
-      recommendation.kit = 'Complete Hair Kit';
-      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-    } else if (hairStage === "Stage 5 (Balding from crown area)" || 
-               hairStage === "Stage 6 (Advanced balding)" || 
-               hairStage === "Heavy Hair Fall" || 
-               hairStage === "Coin Size Patch") {
-      recommendation.kit = 'Hair Restoration Kit';
-      recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
+    // **Male User Recommendation Logic**
+    if (gender === "Male") {
+      if (hairStage === "Stage 2 (Hair line receding)" || hairStage === "Stage 1 (Slightly hair loss)") {
+        recommendation.kit = 'Classic Kit';
+        recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+      } else if (hairStage === "Stage 3 (Developing bald spot)" || hairStage === "Stage 4 (Visible bald spot)") {
+        recommendation.kit = 'Complete Hair Kit';
+        recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
+      } else if (["Stage 5 (Balding from crown area)", "Stage 6 (Advanced balding)", "Heavy Hair Fall", "Coin Size Patch"].includes(hairStage)) {
+        recommendation.kit = 'Hair Restoration Kit';
+        recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
+      }
     }
 
-    // Dandruff Conditions
-    if (dandruff === "Yes" && dandruffStage && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffStage)) {
+    // **Female User Recommendation Logic**
+    if (gender === "Female") {
+      if (goal === "Control hair fall") {
+        recommendation.kit = "Active Hair Growth Kit";
+        recommendation.products = ["Gummies", "Shampoo", "Hair Growth Serum"];
+      } else if (goal === "Regrow Hair") {
+        if (["Hair thinning", "Less volume on sides"].includes(mainConcern)) {
+          recommendation.kit = "Classic Kit";
+          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
+        } else if (["Coin size patches", "Medium widening"].includes(mainConcern)) {
+          recommendation.kit = "Complete Kit";
+          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
+        } else if (mainConcern === "Advanced widening") {
+          return res.status(400).json({ message: "Consult a hair doctor for advanced widening." });
+        }
+      }
+
+      if (hairFall === "Yes, extreme") {
+        recommendation.kit = "Active Hair Growth Kit";
+        recommendation.products = ["Gummies", "Shampoo", "Hair Growth Serum"];
+      }
+    }
+
+    // **Dandruff Conditions**
+    if (dandruff === "Yes" && dandruffStage && ["Low", "Mild", "Moderate", "Severe"].includes(dandruffStage)) {
       if (!recommendation.kit) {
-        recommendation.kit = 'Anti-Dandruff Kit';
-        recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
+        recommendation.kit = "Anti-Dandruff Kit";
+        recommendation.products = ["Gummies", "Shampoo", "Conditioner"];
       }
-      if (dandruffStage === 'Severe') {
-        recommendation.products.push('Anti-Dandruff Serum');
+      if (dandruffStage === "Severe") {
+        recommendation.products.push("Anti-Dandruff Serum");
       }
     }
 
-    // Energy Levels
-    if (energyLevels === 'Medium' || energyLevels === 'Low') {
-      recommendation.products.push('Shilajit');
+    // **Energy Levels**
+    if (energyLevels === "Medium" || energyLevels === "Low") {
+      recommendation.products.push("Shilajit");
     }
 
-    // Ensure kit is always assigned
+    // **Ensure a kit is always assigned**
     if (!recommendation.kit) {
-      recommendation.kit = 'General Hair Care Kit';
-      recommendation.products = ['Gummies', 'Shampoo'];
+      recommendation.kit = "General Hair Care Kit";
+      recommendation.products = ["Gummies", "Shampoo"];
     }
 
-    // Save the recommendation
+    // **Save the recommendation**
     const recommendationDoc = new Recommendation({
       userId,
       userGender: gender,
@@ -108,7 +130,11 @@ router.post('/recommend', async (req, res) => {
       products: recommendation.products,
       hairStage,
       dandruffStage,
-      energyLevels
+      energyLevels,
+      naturalHair,
+      goal,
+      hairFall,
+      mainConcern
     });
 
     const savedRecommendation = await recommendationDoc.save();
@@ -124,6 +150,7 @@ router.post('/recommend', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 // Get recommendations by userId and gender
