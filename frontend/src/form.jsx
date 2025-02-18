@@ -91,16 +91,16 @@ function Form() {
   };
 
   const handleNext = () => {
+    if (responses.healthConcern === "Sexual Health" || responses.healthConcern === "Beard Growth") {
+      // Submit only the basic info and health concern
+      handleSubmit();
+      return;
+    }
+
     if (step < 2 + getGenderQuestions().length) {
       setStep((prevStep) => prevStep + 1);
     } else {
-      if (responses.healthConcern === "Beard Growth") {
-        alert(
-          "No questions related to Beard Growth. Please select another concern to submit."
-        );
-      } else {
-        handleSubmit();
-      }
+      handleSubmit();
     }
   };
 
@@ -241,6 +241,32 @@ function Form() {
       const currentQuestion = questions[step - 2];
       if (!currentQuestion) return null;
 
+      // Show final submission screen if health concern is "Sexual Health" or "Beard Growth"
+      if (responses.healthConcern === "Sexual Health" || responses.healthConcern === "Beard Growth") {
+        return (
+          <div className="text-center">
+            <h3 className="text-xl font-semibold text-green-600 mb-4">
+              Thank you for your response!
+            </h3>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <p className="text-lg mb-4">Your selected health concern:</p>
+              <p className="text-xl font-medium text-green-700 mb-6">
+                {responses.healthConcern}
+              </p>
+              <p className="text-gray-600 mb-4">
+                Our team will contact you shortly to assist you with your {responses.healthConcern.toLowerCase()} concerns.
+              </p>
+              <div className="mt-4 p-4 bg-green-50 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  Your contact details have been recorded. We ensure complete privacy of your information.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // For Hair Loss concerns, continue with all questions
       if (
         currentQuestion.name === "dandruffStage" &&
         responses.dandruff !== "Yes"

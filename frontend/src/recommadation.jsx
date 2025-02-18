@@ -27,8 +27,9 @@ const RecommendationPage = () => {
 
     try {
       const requestData = {
-        userId: formData._id, // Get from stored user data
+        userId: formData._id,
         gender: formData.gender,
+        healthConcern: responses.healthConcern || formData.healthConcern,
         hairStage: formData.hairStage || responses.hairStage,
         dandruff: formData.dandruff || responses.dandruff,
         dandruffStage: formData.dandruffStage || responses.dandruffStage,
@@ -93,37 +94,45 @@ const RecommendationPage = () => {
         {/* Assessment Answers Section */}
         <div className="bg-white shadow-lg rounded-lg p-6 ">
           <h2 className="text-xl font-semibold text-green-700 mb-4">Your Issues</h2>
-          <div className="space-y-3">
-            {formData.gender === 'Male' ? (
+          <div className="grid grid-cols-2 gap-4">
+            {formData.gender === 'Male' && (
               <>
                 <div>
                   <p className="font-medium">Health Concern:</p>
                   <p className="text-gray-600">{responses.healthConcern || formData.healthConcern}</p>
                 </div>
-                <div>
-                  <p className="font-medium">Hair Stage:</p>
-                  <p className="text-gray-600">{responses.hairStage || formData.hairStage}</p>
-                </div>
-                <div>
-                  <p className="font-medium">Dandruff:</p>
-                  <p className="text-gray-600">{responses.dandruff || formData.dandruff}</p>
-                </div>
-                {(responses.dandruff === 'Yes' || formData.dandruff === 'Yes') && (
-                  <div>
-                    <p className="font-medium">Dandruff Stage:</p>
-                    <p className="text-gray-600">{responses.dandruffStage || formData.dandruffStage}</p>
-                  </div>
+
+                {/* Only show hair-related issues if health concern is Hair Loss */}
+                {(responses.healthConcern === 'Hair Loss' || formData.healthConcern === 'Hair Loss') && (
+                  <>
+                    <div>
+                      <p className="font-medium">Hair Stage:</p>
+                      <p className="text-gray-600">{responses.hairStage || formData.hairStage}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">Dandruff:</p>
+                      <p className="text-gray-600">{responses.dandruff || formData.dandruff}</p>
+                    </div>
+                    {(responses.dandruff === 'Yes' || formData.dandruff === 'Yes') && (
+                      <div>
+                        <p className="font-medium">Dandruff Stage:</p>
+                        <p className="text-gray-600">{responses.dandruffStage || formData.dandruffStage}</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium">Hair Thinning/Bald Spots:</p>
+                      <p className="text-gray-600">{responses.thinningOrBaldSpots || formData.thinningOrBaldSpots}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">Energy Levels:</p>
+                      <p className="text-gray-600">{responses.energyLevels || formData.energyLevels}</p>
+                    </div>
+                  </>
                 )}
-                <div>
-                  <p className="font-medium">Hair Thinning/Bald Spots:</p>
-                  <p className="text-gray-600">{responses.thinningOrBaldSpots || formData.thinningOrBaldSpots}</p>
-                </div>
-                <div>
-                  <p className="font-medium">Energy Levels:</p>
-                  <p className="text-gray-600">{responses.energyLevels || formData.energyLevels}</p>
-                </div>
               </>
-            ) : (
+            )}
+
+            {formData.gender === 'Female' && (
               <>
                 <div>
                   <p className="font-medium">Natural Hair Type:</p>

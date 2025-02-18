@@ -47,6 +47,11 @@ const recommendationSchema = new mongoose.Schema(
       required: true,
       enum: ['Male', 'Female']
     },
+    healthConcern: {
+      type: String,
+      required: true,
+      enum: ['Hair Loss', 'Sexual Health', 'Beard Growth']
+    },
     kit: { 
       type: String, 
       required: true 
@@ -55,6 +60,9 @@ const recommendationSchema = new mongoose.Schema(
       type: String, 
       required: true 
     }],
+    description: {
+      type: String
+    },
     stage: String,
     dandruffLevel: String,
     energyLevel: String
