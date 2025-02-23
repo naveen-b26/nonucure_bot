@@ -50,11 +50,16 @@ router.post("/submit-form", async (req, res) => {
 // Recommend Route
 router.post('/recommend', async (req, res) => {
   try {
+    // Retrieve userId from local storage instead of req.body
+    const userId = req.headers['user-id']; // Get userId from headers
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
     const { 
-      userId, 
       gender, 
       healthConcern,
-      // Hair loss specific fields
       hairStage, 
       dandruff, 
       dandruffStage, 
@@ -149,7 +154,6 @@ router.post('/recommend', async (req, res) => {
       kit: recommendation.kit,
       products: recommendation.products,
       description: recommendation.description,
-      // Only include these for Hair Loss
       ...(healthConcern === 'Hair Loss' && {
         hairStage,
         dandruffStage,
