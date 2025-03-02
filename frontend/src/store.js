@@ -19,7 +19,17 @@ const useStore = create((set) => ({
     hairFall: "",
     mainConcern: "",
   },
-  responses: {},
+  responses: {
+    healthConcern: "",
+    hairStage: "",
+    dandruff: "",
+    dandruffStage: "",
+    energyLevels: "",
+    naturalHair:"",
+    goal: "",
+    hairFall: "",
+    mainConcern: ""
+  },
   userId: null,
   step: 0, // Added step tracking
 

@@ -4,7 +4,8 @@ import useStore from './store'; // Zustand store
 import axios from 'axios';
 
 const RecommendationPage = () => {
-  const { formData, responses } = useStore();
+  const { formData, responses,userId } = useStore();
+  console.log(formData,responses,userId)
   const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,25 +18,24 @@ const RecommendationPage = () => {
       navigate('/');
       return;
     }
-
     fetchRecommendation();
   }, []); // Run once on mount
-
   const fetchRecommendation = async () => {
     setLoading(true);
     setError('');
-
+  
     try {
-      const userId = localStorage.getItem('userId'); // Get userId from local storage
-
+      const userId = localStorage.getItem('userId');
+      console.log('UserId from storage:', userId);
+      
       if (!userId) {
-        setError('Server Error in Loading!!'); // Set error message
-        setLoading(false); // Stop loading
-        return; // Exit the function
+        setError('User ID not found. Please complete the assessment first.');
+        setLoading(false);
+        return;
       }
-
+  
       const response = await axios.post("http://localhost:5000/api/recommend", {
-        userId, // Use the userId from local storage
+        userId: userId,  // Add userId to the request body
         gender: formData.gender,
         healthConcern: responses.healthConcern,
         hairStage: responses.hairStage,
@@ -47,11 +47,8 @@ const RecommendationPage = () => {
         hairFall: responses.hairFall,
         mainConcern: responses.mainConcern
       });
-
-      setRecommendation(response.data);
-
-      // Remove userId from local storage after use
       localStorage.removeItem('userId');
+      setRecommendation(response.data);
     } catch (error) {
       console.error('Recommendation error:', error);
       setError('Error generating recommendations. Please try again later.');
@@ -59,15 +56,13 @@ const RecommendationPage = () => {
       setLoading(false);
     }
   };
-
   if (loading) return <div className="text-center text-xl">Loading...</div>;
-
   return (
     <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-center text-green-600 mb-6">Your Hair Care Journey</h1>
-
+  
       {error && <div className="text-red-500 text-lg mb-4">{error}</div>}
-
+  
       <div className="w-full flex max-w-6xl gap-12">
         <div className='flex flex-col w-1/2 gap-3'>
           {/* Personal Information Section */}
@@ -96,7 +91,7 @@ const RecommendationPage = () => {
               </div>
             </div>
           </div>
-
+  
           {/* Assessment Answers Section */}
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-semibold text-green-700 mb-4">Your Issues</h2>
@@ -131,7 +126,7 @@ const RecommendationPage = () => {
                   )}
                 </>
               )}
-
+  
               {formData.gender === 'Female' && (
                 <>
                   <div>
@@ -155,7 +150,7 @@ const RecommendationPage = () => {
             </div>
           </div>
         </div>
-
+  
         <div className='flex flex-col w-1/2'>
           {/* Recommendation Section */}
           {recommendation && (
@@ -187,7 +182,7 @@ const RecommendationPage = () => {
               </div>
             </div>
           )}
-
+  
           <button
             onClick={() => navigate('/')}
             className="w-full mt-6 py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"

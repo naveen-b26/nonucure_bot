@@ -50,26 +50,12 @@ router.post("/submit-form", async (req, res) => {
 // Recommend Route
 router.post('/recommend', async (req, res) => {
   try {
-    // Retrieve userId from local storage instead of req.body
-    const userId = req.headers['user-id']; // Get userId from headers
-
+    const { userId, gender, healthConcern, hairStage, dandruff, dandruffStage, 
+            energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
-    const { 
-      gender, 
-      healthConcern,
-      hairStage, 
-      dandruff, 
-      dandruffStage, 
-      energyLevels, 
-      naturalHair, 
-      goal, 
-      hairFall, 
-      mainConcern 
-    } = req.body;
-    
     // Validate user exists in appropriate collection
     const UserModel = gender === 'Male' ? MaleUser : FemaleUser;
     const user = await UserModel.findById(userId);
@@ -175,21 +161,5 @@ router.post('/recommend', async (req, res) => {
   }
 });
 
-// Get recommendations by userId and gender
-router.get('/recommendations/:userId/:gender', async (req, res) => {
-  try {
-    const { userId, gender } = req.params;
-    
-    const recommendations = await Recommendation.find({ 
-      userId, 
-      userGender: gender 
-    }).sort({ createdAt: -1 });
-    
-    res.json(recommendations);
-  } catch (error) {
-    console.error("❌ Error fetching recommendations:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 module.exports = router;
