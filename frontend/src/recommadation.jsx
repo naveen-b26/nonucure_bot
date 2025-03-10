@@ -94,7 +94,7 @@ const RecommendationPage = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/api/recommend", {
+      const response = await axios.post(`${process.env.api_end_key}/recommend`, {
         userId: userId,  // Add userId to the request body
         gender: formData.gender,
         healthConcern: responses.healthConcern,
