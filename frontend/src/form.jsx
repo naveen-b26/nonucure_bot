@@ -26,7 +26,7 @@ import bs from './pics/baldSpots.png';
 import thin from './pics/thinning.png';
 import bot from './pics/botImage.jpg'
 function Form() {
-  const { userId, setUserId, formData, setFormData, responses, setResponses } = useStore();
+  const { setUserId, formData, setFormData, responses, setResponses } = useStore();
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
     { type: "bot", content: "I'm here to assist you with your health assessment." },

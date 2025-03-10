@@ -79,7 +79,7 @@ const RecommendationPage = () => {
       return;
     }
     fetchRecommendation();
-  }, []); // Run once on mount
+  }); // Run once on mount
   const fetchRecommendation = async () => {
     setLoading(true);
     setError('');
