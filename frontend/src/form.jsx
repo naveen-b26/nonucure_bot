@@ -1,335 +1,30 @@
-// import React, { useState, useRef, useEffect } from 'react';
-// import { motion } from "framer-motion";
-// import useStore from "./store";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
 
-// function Form() {
-//   const {userId,setUserId,formData,setFormData,responses,setResponses} = useStore();
-//   const navigate = useNavigate();
-  
-//   const [messages, setMessages] = useState([
-//     {
-//       type: "bot",
-//       content: "I'm here to assist you with your health assessment."
-//     },
-//     {
-//       type: "bot",
-//       content: "May I have your details to proceed?",
-//       showStartButton: true
-//     }
-//   ]);
-
-//   const [currentInput, setCurrentInput] = useState("");
-//   const [step, setStep] = useState(0);
-//   const messagesEndRef = useRef(null);
-//   const scrollToBottom = () => {
-//     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//   };
-//   useEffect(() => {
-//     scrollToBottom();
-//   }, [messages]);
-//   const handleStartClick = () => {
-//     setMessages(prev => [...prev,
-//       { type: "user", content: "Sure, let's start!" },
-//       { 
-//         type: "bot", 
-//         content: "What's your name?",
-//         input: true,
-//         name: "name",
-//         placeholder: "Enter your name"
-//       }
-//     ]);
-//     setStep(1);
-//   };
-  // const getNextQuestion = (name, value) => {
-  //   if (step <= 5) {
-  //     switch(name) {
-  //       case "name":
-  //         return { content: "What's your email?", input: true, name: "email", placeholder: "Enter your email" };
-  //       case "email":
-  //         return { content: "What's your phone number?", input: true, name: "phone", placeholder: "Enter your phone number" };
-  //       case "phone":
-  //         return { content: "What's your age?", input: true, name: "age", placeholder: "Enter your age", type: "number" };
-  //       case "age":
-  //         return { 
-  //           content: "Please select your gender:", 
-  //           input: true,
-  //           name: "gender",
-  //           options: ["Male", "Female"]
-  //         };
-  //       case "gender":
-  //         if (value === "Male") {
-  //           return {
-  //             content: "What's your primary health concern?",
-  //             input: true,
-  //             name: "healthConcern",
-  //             options: ["Hair Loss", "Sexual Health", "Beard Growth"]
-  //           };
-  //         } else {
-  //           return {
-  //             content: "What's your primary health concern?",
-  //             input: true,
-  //             name: "healthConcern",
-  //             options: ["Hair Loss"]
-  //           };
-  //         }
-  //       default:
-  //         return null;
-  //     }
-  //   } else if (name === "healthConcern") {
-  //     if (value === "Hair Loss") {
-  //       if (formData.gender === "Male") {
-  //         return {
-  //           content: "Please select your hair stage:",
-  //           input: true,
-  //           name: "hairStage",
-  //           options: [
-  //             "Stage 1 (Slightly hair loss)",
-  //             "Stage 2 (Hair line receding)",
-  //             "Stage 3 (Developing bald spot)",
-  //             "Stage 4 (Visible bald spot)",
-  //             "Stage 5 (Balding from crown area)",
-  //             "Stage 6 (Advanced balding)",
-  //             "Heavy Hair Fall",
-  //             "Coin Size Patch",
-  //           ]
-  //         };
-  //       } else {
-  //         return {
-  //           content: "What does your hair look like naturally?",
-  //           input: true,
-  //           name: "naturalHair",
-  //           options: ["Straight", "Curly", "Wavy", "Coily"]
-  //         };
-  //       }
-  //     }
-  //   } else if (name === "hairStage") {
-  //     return {
-  //       content: "Do you have dandruff?",
-  //       input: true,
-  //       name: "dandruff",
-  //       options: ["Yes", "No"]
-  //     };
-  //   } else if (name === "dandruff" && value === "Yes") {
-  //     return {
-  //       content: "Select your dandruff stage:",
-  //       input: true,
-  //       name: "dandruffStage",
-  //       options: ["Low", "Mild", "Moderate", "Severe"]
-  //     };
-  //   }else if (name === "dandruff" || name==="dandruffStage") {
-  //     return {
-  //       content: "Are you experiencing hair thinning or bald spots?",
-  //       input: true,
-  //       name: "thinningOrBaldSpots",
-  //       options: [
-  //         "Yes, both",
-  //         "Yes, thinning only",
-  //         "Yes, bald spots only",
-  //         "No",
-  //         "I'm not sure",
-  //       ],
-  //     };
-  //   }
-    
-  //   else if (name === "thinningOrBaldSpots") {
-  //     return {
-  //       content: "What do you describe about energy levels:",
-  //       input: true,
-  //       name: "energyLevels",
-  //       options: ["Low", "Moderate","High"]
-  //     };
-  //   }
-    
-  //   else if (name === "naturalHair") {
-  //     return {
-  //       content: "What is your current goal?",
-  //       input: true,
-  //       name: "goal",
-  //       options: ["Control hair fall", "Regrow Hair"]
-  //     };
-  //   } else if (name === "goal") {
-  //     return {
-  //       content: "Do you feel more hair fall than usual?",
-  //       input: true,
-  //       name: "hairFall",
-  //       options: ["Yes, extreme", "Mild", "No"]
-  //     };
-  //   } else if (name === "hairFall") {
-  //     return {
-  //       content: "Choose your main concern:",
-  //       input: true,
-  //       name: "mainConcern",
-  //       options: ["Hair thinning", "Coin size patches", "Medium widening", "Advanced widening", "Less volume on sides"]
-  //     };
-  //   }
-  //   return null;
-  // };
-//   const handleInputSubmit = async (name, value) => {
-    
-//     // Immediately update both formData and responses regardless of step
-//     const updatedFormData = { ...formData, [name]: value };
-//     const updatedResponses = { ...responses, [name]: value };
-
-//     // Special case for Sexual Health or Beard Growth
-//     if (name === "healthConcern" && (value === "Sexual Health" || value === "Beard Growth")) {
-//       setFormData(updatedFormData);
-//       setResponses(updatedResponses);
-//       handleSubmit();
-//       return;
-//     }
-
-//     // Special handling for dandruff "No" response
-//     if (name === "dandruff" && value === "No") {
-//       updatedFormData.dandruffStage = "None";
-//       updatedResponses.dandruffStage = "None";
-//     }
-
-//     // Update state with the new values
-//     setFormData(updatedFormData);
-//     setResponses(updatedResponses);
-
-//     // Update messages with user's response
-//     setMessages(prev => [...prev, { type: "user", content: value }]);
-
-//     // Get next question after state updates
-//     const nextContent = getNextQuestion(name, value);
-//     if (nextContent) {
-//       setTimeout(() => {
-//         setMessages(prev => [...prev, { type: "bot", ...nextContent }]);
-//         setStep(s => s + 1);
-//       }, 500);
-//     } else {
-//       handleSubmit();
-//     }
-
-//     setCurrentInput("");
-    
-//   };
-//   const handleSubmit = async () => {
-//     console.log("formDate",formData)
-//     console.log("responces",responses)
-//     try {
-//       const response = await axios.post("http://localhost:5000/api/submit-form", {
-//         formData: formData,
-//         responses: responses,
-//       });
-
-//       localStorage.setItem('userId', response.data.userId);
-//       // Store userId in local storage
-//      setUserId(response.data.userId);
-
-//       setFormData(prev => ({
-//         ...prev,
-//         _id: userId
-//       }));
-
-//       setMessages(prev => [...prev, 
-//         { type: "bot", content: "Thank you! Generating your recommendations..." }
-//       ]);
-
-//       setTimeout(() => {
-//         navigate("/recommendation");
-//       }, 1500);
-//     } catch (error) {
-//       console.error("Error:", error);
-//       setMessages(prev => [...prev, 
-//         { type: "bot", content: "Sorry, there was an error. Please try again." }
-//       ]);
-//     }
-//   };
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-//       <div className="bg-black w-full sm:w-[600px] text-white font-bold text-center text-2xl font-mono p-3">
-//         Self Assessment
-//       </div>
-
-//       <div className="bg-white shadow-lg rounded-lg w-full sm:w-[600px] my-4">
-//         <div className="p-6">
-//           <div className="space-y-4 max-h-[60vh] overflow-y-auto mb-6">
-//             {messages.map((message, index) => (
-//               <motion.div
-//                 key={index}
-//                 initial={{ opacity: 0, y: 20 }}
-//                 animate={{ opacity: 1, y: 0 }}
-//                 className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-//               >
-//                 <div className={`max-w-[80%] rounded-lg p-4 ${
-//                   message.type === "user" ? "bg-green-500 text-white" : "bg-gray-200"
-//                 }`}>
-//                   <p>{message.content}</p>
-                  
-//                   {message.showStartButton && (
-//                     <button
-//                       onClick={handleStartClick}
-//                       className="mt-4 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600"
-//                     >
-//                       Sure, let's start!
-//                     </button>
-//                   )}
-
-//                   {message.input && message === messages[messages.length - 1] && (
-//                     <div className="mt-4">
-//                       {message.options ? (
-//                         <div className="space-y-2">
-//                           {message.options.map((option) => (
-//                             <button
-//                               key={option}
-//                               onClick={() => handleInputSubmit(message.name, option)}
-//                               className="w-full p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors text-gray-800 text-left"
-//                             >
-//                               {option}
-//                             </button>
-//                           ))}
-//                         </div>
-//                       ) : (
-//                         <div className="flex gap-2">
-//                           <input
-//                             type={message.type || "text"}
-//                             className="flex-1 p-3 rounded-lg border"
-//                             placeholder={message.placeholder}
-//                             value={currentInput}
-//                             onChange={(e) => setCurrentInput(e.target.value)}
-//                             onKeyPress={(e) => {
-//                               if (e.key === "Enter" && currentInput) {
-//                                 handleInputSubmit(message.name, currentInput);
-//                               }
-//                             }}
-//                           />
-//                           <button
-//                             onClick={() => handleInputSubmit(message.name, currentInput)}
-//                             disabled={!currentInput}
-//                             className="bg-black text-white px-4 rounded-lg hover:bg-black disabled:opacity-50"
-//                           >
-//                             Next
-//                           </button>
-//                         </div>
-//                       )}
-//                     </div>
-//                   )}
-//                 </div>
-//               </motion.div>
-//             ))}
-//             <div ref={messagesEndRef} />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// export default Form;
-
-
-//2nd
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from "framer-motion";
 import useStore from "./store";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import male from "./pics/male.png";
+import female from "./pics/female.png";
+import hairLoss from "./pics/hairloss.png";
+import sh from "./pics/sexualHealth.png";
+import bg from "./pics/beardGrowth.png";
+import s1 from "./pics/stage-1.png";
+import s2 from "./pics/stage-2.png";
+import s3 from "./pics/stage-3.png";
+import s4 from "./pics/stage-4.png";
+import s5 from "./pics/stage-5.png";
+import s6 from "./pics/stage-6.png";
+import s7 from "./pics/stage-7.png";
+import stH from "./pics/straightHair.jpg";
+import wH from "./pics/wavyHair.jpg";
+import cH from "./pics/curlyHair.jpg";
+import coH from './pics/coilyHair.png';
+import dn from "./pics/dandruffNo.png";
+import dy from "./pics/dandruffYes.jpg";
+import bs from './pics/baldSpots.png';
+import thin from './pics/thinning.png';
+import bot from './pics/botImage.jpg'
 function Form() {
   const { userId, setUserId, formData, setFormData, responses, setResponses } = useStore();
   const navigate = useNavigate();
@@ -351,10 +46,6 @@ function Form() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    console.log("Updated formData:", formData);
-    console.log("Updated responses:", responses);
-  }, [formData, responses]);
 
   const handleStartClick = () => {
     setMessages(prev => [
@@ -372,13 +63,13 @@ function Form() {
         case "email":
           return { content: "What's your phone number?", input: true, name: "phone", placeholder: "Enter your phone number" };
         case "phone":
-          return { content: "What's your age?", input: true, name: "age", placeholder: "Enter your age", type: "number" };
+          return { content: "What's your age?", input: true, name: "age", placeholder: "Enter your age", type: "bot" };
         case "age":
           return { 
             content: "Please select your gender:", 
             input: true,
             name: "gender",
-            options: ["Male", "Female"]
+            options: [{label:"Male",image:male},{label:"Female", image:female}]
           };
         case "gender":
           if (value === "Male") {
@@ -386,14 +77,14 @@ function Form() {
               content: "What's your primary health concern?",
               input: true,
               name: "healthConcern",
-              options: ["Hair Loss", "Sexual Health", "Beard Growth"]
+              options: [{label:"Hair Loss",image:hairLoss}, {label:"Sexual Health",image:sh}, {label:"Beard Growth",image:bg}]
             };
           } else {
             return {
               content: "What's your primary health concern?",
               input: true,
               name: "healthConcern",
-              options: ["Hair Loss"]
+              options: [{label:"Hair Loss",image:hairLoss}]
             };
           }
         default:
@@ -407,14 +98,14 @@ function Form() {
             input: true,
             name: "hairStage",
             options: [
-              "Stage 1 (Slightly hair loss)",
-              "Stage 2 (Hair line receding)",
-              "Stage 3 (Developing bald spot)",
-              "Stage 4 (Visible bald spot)",
-              "Stage 5 (Balding from crown area)",
-              "Stage 6 (Advanced balding)",
-              "Heavy Hair Fall",
-              "Coin Size Patch",
+              {label:"Stage 1 (Slightly hair loss)",image:s1},
+              {label:"Stage 2 (Hair line receding)",image:s2},
+              {label:"Stage 3 (Developing bald spot)",image:s3},
+              {label:"Stage 4 (Visible bald spot)",image:s4},
+              {label:"Stage 5 (Balding from crown area)",image:s5},
+              {label:"Stage 6 (Advanced balding)",image:s6},
+              {label:"Heavy Hair Fall",image:s7},
+              
             ]
           };
         } else {
@@ -422,7 +113,12 @@ function Form() {
             content: "What does your hair look like naturally?",
             input: true,
             name: "naturalHair",
-            options: ["Straight", "Curly", "Wavy", "Coily"]
+            options: [
+              {label:"Straight",image:stH}, 
+              {label:"Curly",image:cH}, 
+              {label:"Wavy",image:wH}, 
+              {label:"Coily",image:coH}
+            ]
           };
         }
       }
@@ -431,14 +127,14 @@ function Form() {
         content: "Do you have dandruff?",
         input: true,
         name: "dandruff",
-        options: ["Yes", "No"]
+        options: [{label:"Yes",image:dy}, {label:"No",image:dn}]
       };
     } else if (name === "dandruff" && value === "Yes") {
       return {
         content: "Select your dandruff stage:",
         input: true,
         name: "dandruffStage",
-        options: ["Low", "Mild", "Moderate", "Severe"]
+        options: [{label:"Low"}, {label:"Mild"}, {label:"Moderate"}, {label:"Severe"}]
       };
     }else if (name === "dandruff" || name==="dandruffStage") {
       return {
@@ -446,11 +142,11 @@ function Form() {
         input: true,
         name: "thinningOrBaldSpots",
         options: [
-          "Yes, both",
-          "Yes, thinning only",
-          "Yes, bald spots only",
-          "No",
-          "I'm not sure",
+          {label:"thinning only",image:thin},
+          {label:"bald spots only",image:bs},
+          {label:"Yes, both"},
+          {label:"No"},
+          {label:"I'm not sure"},
         ],
       };
     }
@@ -460,7 +156,7 @@ function Form() {
         content: "What do you describe about energy levels:",
         input: true,
         name: "energyLevels",
-        options: ["Low", "Moderate","High"]
+        options: [{label:"Low"}, {label:"Moderate"},{label:"High"}]
       };
     }
     
@@ -469,21 +165,21 @@ function Form() {
         content: "What is your current goal?",
         input: true,
         name: "goal",
-        options: ["Control hair fall", "Regrow Hair"]
+        options: [{label:"Control hair fall"}, {label:"Regrow Hair"}]
       };
     } else if (name === "goal") {
       return {
         content: "Do you feel more hair fall than usual?",
         input: true,
         name: "hairFall",
-        options: ["Yes, extreme", "Mild", "No"]
+        options: [{label:"Yes, extreme"}, {label:"Mild"}, {label:"No"}]
       };
     } else if (name === "hairFall") {
       return {
         content: "Choose your main concern:",
         input: true,
         name: "mainConcern",
-        options: ["Hair thinning", "Coin size patches", "Medium widening", "Advanced widening", "Less volume on sides"]
+        options: [{label:"Hair thinning"}, {label:"Coin size patches"}, {label:"Medium widening"}, {label:"Advanced widening"}, {label:"Less volume on sides"}]
       };
     }
     return null;
@@ -539,7 +235,7 @@ function Form() {
 
   
   const handleSubmit = async (updatedFormData = formData, updatedResponses = responses) => {
-  console.log("Submitting Data", updatedFormData, updatedResponses);
+  
   try {
     const response = await axios.post("http://localhost:5000/api/submit-form", {
       formData: updatedFormData,
@@ -559,82 +255,93 @@ function Form() {
 };
 
   return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-black w-full sm:w-[600px] text-white font-bold text-center text-2xl font-mono p-3">
-        Self Assessment
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="bg-black w-full sm:w-[600px] text-white font-bold text-center text-2xl font-mono p-3">
+      Self Assessment
+    </div>
 
-      <div className="bg-white shadow-lg rounded-lg w-full sm:w-[600px] my-4">
-        <div className="p-6">
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto mb-6">
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div className={`max-w-[80%] rounded-lg p-4 ${
-                  message.type === "user" ? "bg-green-500 text-white" : "bg-gray-200"
+    <div className="bg-white shadow-lg rounded-lg w-full sm:w-[600px] my-4">
+   
+      <div className="p-6">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto mb-6">
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+            >
+              {message.type === "bot" && (
+                <img
+                  src={bot} // Replace with your bot image path
+                  alt="Chatbot"
+                  className="w-10 h-10 rounded-full mr-3" // Adjust size and margin
+                />
+              )}
+              <div className={`max-w-[80%] rounded-lg p-4 ${message.type === "user" ? "bg-green-500 text-white" : "bg-gray-200"
                 }`}>
-                  <p>{message.content}</p>
-                  
-                  {message.showStartButton && (
-                    <button
-                      onClick={handleStartClick}
-                      className="mt-4 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600"
-                    >
-                      Sure, let's start!
-                    </button>
-                  )}
+                <p>{message.content}</p>
 
-                  {message.input && message === messages[messages.length - 1] && (
-                    <div className="mt-4">
-                      {message.options ? (
-                        <div className="space-y-2">
+                {message.showStartButton && (
+                  <button
+                    onClick={handleStartClick}
+                    className="mt-4 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+                  >
+                    Sure, let's start!
+                  </button>
+                )}
+
+                {message.input && message === messages[messages.length - 1] && (
+                  <div className="mt-4">
+                    {message.options ? (
+                      <div className="space-y-2">
+                        <div className={`grid ${message.options.some(opt => opt.image) ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
                           {message.options.map((option) => (
                             <button
-                              key={option}
-                              onClick={() => handleInputSubmit(message.name, option)}
-                              className="w-full p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors text-gray-800 text-left"
+                              key={option.label}
+                              onClick={() => handleInputSubmit(message.name, option.label)}
+                              className={`flex ${option.image ? "flex-col" : "flex-row"} items-center p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors text-gray-800 border`}
                             >
-                              {option}
+                              {option.image && <img src={option.image} alt={option.label} className="w-24 h-24 object-cover mb-2" />}
+                              <span className="font-semibold">{option.label}</span>
                             </button>
                           ))}
                         </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <input
-                            type={message.type || "text"}
-                            className="flex-1 p-3 rounded-lg border"
-                            placeholder={message.placeholder}
-                            value={currentInput}
-                            onChange={(e) => setCurrentInput(e.target.value)}
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter" && currentInput) {
-                                handleInputSubmit(message.name, currentInput);
-                              }
-                            }}
-                          />
-                          <button
-                            onClick={() => handleInputSubmit(message.name, currentInput)}
-                            disabled={!currentInput}
-                            className="bg-black text-white px-4 rounded-lg hover:bg-black disabled:opacity-50"
-                          >
-                            Next
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <input
+                          type={message.type || "text"}
+                          className="flex-1 p-3 rounded-lg border"
+                          placeholder={message.placeholder}
+                          value={currentInput}
+                          onChange={(e) => setCurrentInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter" && currentInput) {
+                              handleInputSubmit(message.name, currentInput);
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={() => handleInputSubmit(message.name, currentInput)}
+                          disabled={!currentInput}
+                          className="bg-black text-white px-4 rounded-lg hover:bg-black disabled:opacity-50"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                )}
+              </div>
+            </motion.div>
+          ))}
+          <div ref={messagesEndRef} />
         </div>
       </div>
     </div>
+  </div>
   );
 }
 

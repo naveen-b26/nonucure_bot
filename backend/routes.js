@@ -35,7 +35,7 @@ router.post("/submit-form", async (req, res) => {
     }
 
     // Store the user ID in the store for later use
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Form submitted successfully",
       userId: savedUser._id,
       gender: savedUser.gender
@@ -50,8 +50,8 @@ router.post("/submit-form", async (req, res) => {
 // Recommend Route
 router.post('/recommend', async (req, res) => {
   try {
-    const { userId, gender, healthConcern, hairStage, dandruff, dandruffStage, 
-            energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
+    const { userId, gender, healthConcern, hairStage, dandruff, dandruffStage,
+      energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
@@ -67,7 +67,7 @@ router.post('/recommend', async (req, res) => {
     let recommendation = {};
 
     // First check health concern
-    switch(healthConcern) {
+    switch (healthConcern) {
       case "Sexual Health":
         recommendation.kit = 'Sexual Health Kit';
         recommendation.products = ['Shilajit'];
@@ -131,7 +131,14 @@ router.post('/recommend', async (req, res) => {
       default:
         return res.status(400).json({ message: "Invalid health concern specified" });
     }
+    const existingRecommendation = await Recommendation.findOne({ userId, healthConcern });
 
+    if (existingRecommendation) {
+      return res.status(409).json({
+        message: "Recommendation already exists",
+        existingRecommendation
+      });
+    }
     // Save recommendation
     const recommendationDoc = new Recommendation({
       userId,
