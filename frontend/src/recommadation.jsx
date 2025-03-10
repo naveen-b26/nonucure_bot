@@ -94,7 +94,7 @@ const RecommendationPage = () => {
         return;
       }
 
-      const response = await axios.post(`${process.env.api_end_key}/recommend`, {
+      const response = await axios.post(`https://nonucure-bot.vercel.app/api/recommend`, {
         userId: userId,  // Add userId to the request body
         gender: formData.gender,
         healthConcern: responses.healthConcern,

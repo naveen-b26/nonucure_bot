@@ -28,7 +28,6 @@ import bot from './pics/botImage.jpg'
 function Form() {
   const { userId, setUserId, formData, setFormData, responses, setResponses } = useStore();
   const navigate = useNavigate();
-
   const [messages, setMessages] = useState([
     { type: "bot", content: "I'm here to assist you with your health assessment." },
     { type: "bot", content: "May I have your details to proceed?", showStartButton: true }
@@ -268,7 +267,7 @@ function Form() {
   const handleSubmit = async (updatedFormData = formData, updatedResponses = responses) => {
   
   try {
-    const response = await axios.post(`${process.env.api_end_key}/submit-form`, {
+    const response = await axios.post(`https://nonucure-bot.vercel.app/api/submit-form`, {
       formData: updatedFormData,
       responses: updatedResponses
     });
