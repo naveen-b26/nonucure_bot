@@ -84,7 +84,8 @@ function Form() {
               content: "What's your primary health concern?",
               input: true,
               name: "healthConcern",
-              options: [{label:"Hair Loss",image:hairLoss}]
+              options: [{label:"Hair thinning"}, {label:"Coin size patches"}, {label:"Medium widening"}, {label:"Advanced widening"}, {label:"Less volume on sides"}]
+
             };
           }
         default:
@@ -108,7 +109,7 @@ function Form() {
               
             ]
           };
-        } else {
+        }} else {
           return {
             content: "What does your hair look like naturally?",
             input: true,
@@ -121,7 +122,7 @@ function Form() {
             ]
           };
         }
-      }
+      
     } else if (name === "hairStage") {
       return {
         content: "Do you have dandruff?",
@@ -173,19 +174,49 @@ function Form() {
         input: true,
         name: "hairFall",
         options: [{label:"Yes, extreme"}, {label:"Mild"}, {label:"No"}]
-      };
-    } else if (name === "hairFall") {
-      return {
-        content: "Choose your main concern:",
-        input: true,
-        name: "mainConcern",
-        options: [{label:"Hair thinning"}, {label:"Coin size patches"}, {label:"Medium widening"}, {label:"Advanced widening"}, {label:"Less volume on sides"}]
-      };
-    }
+      };}
+    // } else if (name === "hairFall") {
+    //   return {
+    //     content: "Choose your main concern:",
+    //     input: true,
+    //     name: "mainConcern",
+    //     options: [{label:"Hair thinning"}, {label:"Coin size patches"}, {label:"Medium widening"}, {label:"Advanced widening"}, {label:"Less volume on sides"}]
+    //   };
+    // }
     return null;
   };
 
+
   const handleInputSubmit = async (name, value) => {
+    // Validation checks
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        setMessages(prev => [
+          ...prev,
+          { type: "bot", content: "Please enter a valid email address." },
+          { type: "bot", content: "What's your email?", input: true, name: "email", placeholder: "Enter your email" }
+        ]);
+        return;
+      }
+    }
+
+    if (name === "phone") {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(value)) {
+        setMessages(prev => [...prev, { type: "bot", content: "Please enter a valid 10-digit phone number." },{ type: "bot", content: "What's your Phone number?", input: true, name: "phone", placeholder: "Enter your Phone number" }]);
+        return;
+      }
+    }
+
+    if (name === "age") {
+      const age = parseInt(value);
+      if (isNaN(age) ||  age < 16 || age > 90) {
+        setMessages(prev => [...prev, { type: "bot", content: "Please enter a valid Age." },{ type: "bot", content: "What's your age?", input: true, name: "age", placeholder: "Enter your age" }]);
+        return;
+      }
+    }
+
     // Create updated versions of formData and responses
     const updatedFormData = { ...formData, [name]: value };
     const updatedResponses = { ...responses, [name]: value };

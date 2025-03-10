@@ -52,6 +52,7 @@ router.post('/recommend', async (req, res) => {
   try {
     const { userId, gender, healthConcern, hairStage, dandruff, dandruffStage,
       energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
+      console.log("rr",healthConcern);
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
@@ -66,23 +67,23 @@ router.post('/recommend', async (req, res) => {
 
     let recommendation = {};
 
-    // First check health concern
-    switch (healthConcern) {
-      case "Sexual Health":
-        recommendation.kit = 'Sexual Health Kit';
-        recommendation.products = ['Shilajit'];
-        recommendation.description = 'Shilajit is known to boost energy levels and improve overall vitality.';
-        break;
+    // First check gender, then handle specific cases
+    if (gender === 'Male') {
+      switch (healthConcern) {
+        case "Sexual Health":
+          recommendation.kit = 'Sexual Health Kit';
+          recommendation.products = ['Shilajit'];
+          recommendation.description = 'Shilajit is known to boost energy levels and improve overall vitality.';
+          break;
 
-      case "Beard Growth":
-        recommendation.kit = 'Beard Growth Kit';
-        recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-        recommendation.description = 'This combination helps stimulate beard growth and provides essential nutrients.';
-        break;
+        case "Beard Growth":
+          recommendation.kit = 'Beard Growth Kit';
+          recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+          recommendation.description = 'This combination helps stimulate beard growth and provides essential nutrients.';
+          break;
 
-      case "Hair Loss":
-        // Male Hair Loss Logic
-        if (gender === "Male") {
+        case "Hair Loss":
+          // Handle male hair loss stages
           if (hairStage === "Stage 2 (Hair line receding)" || hairStage === "Stage 1 (Slightly hair loss)") {
             recommendation.kit = 'Classic Kit';
             recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
@@ -93,52 +94,61 @@ router.post('/recommend', async (req, res) => {
             recommendation.kit = 'Hair Restoration Kit';
             recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
           }
-        }
-        // Female Hair Loss Logic
-        else if (gender === "Female") {
-          if (goal === "Control hair fall") {
-            recommendation.kit = "Active Hair Growth Kit";
-            recommendation.products = ["Gummies", "Shampoo", "Hair Growth Serum"];
-          } else if (goal === "Regrow Hair") {
-            if (["Hair thinning", "Less volume on sides"].includes(mainConcern)) {
-              recommendation.kit = "Classic Kit";
-              recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
-            } else if (["Coin size patches", "Medium widening"].includes(mainConcern)) {
-              recommendation.kit = "Complete Kit";
-              recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
-            } else if (mainConcern === "Advanced widening") {
-              return res.status(400).json({ message: "Consult a hair doctor for advanced widening." });
+
+          // Handle dandruff conditions
+          if (dandruff === "Yes" && dandruffStage && ["Low", "Mild", "Moderate", "Severe"].includes(dandruffStage)) {
+            if (!recommendation.kit) {
+              recommendation.kit = "Anti-Dandruff Kit";
+              recommendation.products = ["Gummies", "Shampoo", "Conditioner"];
+            }
+            if (dandruffStage === "Severe") {
+              recommendation.products.push("Anti-Dandruff Serum");
             }
           }
-        }
 
-        // Additional Hair Loss Conditions
-        if (dandruff === "Yes" && dandruffStage && ["Low", "Mild", "Moderate", "Severe"].includes(dandruffStage)) {
-          if (!recommendation.kit) {
-            recommendation.kit = "Anti-Dandruff Kit";
-            recommendation.products = ["Gummies", "Shampoo", "Conditioner"];
+          // Handle energy levels
+          if (energyLevels === "Medium" || energyLevels === "Low") {
+            recommendation.products.push("Shilajit");
           }
-          if (dandruffStage === "Severe") {
-            recommendation.products.push("Anti-Dandruff Serum");
-          }
+          break;
+
+        default:
+          return res.status(400).json({ message: "Invalid health concern specified for male" });
+      }
+    } else if (gender === 'Female') {
+      // Handle female-specific cases
+      if (goal === "Control hair fall") {
+        recommendation.kit = "Active Hair Growth Kit";
+        recommendation.products = ["Gummies", "Shampoo", "Hair Growth Serum"];
+      } else if (goal === "Regrow Hair") {
+        // if (["Hair thinning", "Less volume on sides"].includes(healthConcern)) {
+        if( healthConcern === "Hair thinning" || healthConcern === "Less volume on sides") {
+          recommendation.kit = "Classic Kit";
+          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
+        } 
+        // else if (["Coin size patches", "Medium widening"].includes(healthConcern)) {
+        else if(healthConcern === "Coin size patches" || healthConcern === "Medium widening"){ 
+         recommendation.kit = "Complete Kit";
+          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
+        } else if (healthConcern === "Advanced widening") {
+          return res.status(400).json({ message: "Consult a hair doctor for advanced widening." });
         }
-
-        if (energyLevels === "Medium" || energyLevels === "Low") {
-          recommendation.products.push("Shilajit");
-        }
-        break;
-
-      default:
-        return res.status(400).json({ message: "Invalid health concern specified" });
+      } else {
+        return res.status(400).json({ message: "Invalid goal specified for female" });
+      }
+    } else {
+      return res.status(400).json({ message: "Invalid gender specified" });
     }
-    const existingRecommendation = await Recommendation.findOne({ userId, healthConcern });
 
-    if (existingRecommendation) {
-      return res.status(409).json({
-        message: "Recommendation already exists",
-        existingRecommendation
-      });
-    }
+    // const existingRecommendation = await Recommendation.findOne({ userId, healthConcern });
+
+    // if (existingRecommendation) {
+    //   return res.status(409).json({
+    //     message: "Recommendation already exists",
+    //     existingRecommendation
+    //   });
+    // }
+
     // Save recommendation
     const recommendationDoc = new Recommendation({
       userId,

@@ -27,6 +27,11 @@ const maleUserSchema = new mongoose.Schema(
 const femaleUserSchema = new mongoose.Schema(
   {
     ...baseUserSchema,
+    healthConcern: { 
+      type: String, 
+      required: true,
+      enum: ["Hair Loss","Sexual Health","Beard Growth",'Hair thinning', 'Coin size patches', 'Medium widening', 'Advanced widening', 'Less volume on sides']
+    },
     naturalHair: { type: String },
     goal: { type: String },
     hairFall: { type: String },
@@ -50,7 +55,7 @@ const recommendationSchema = new mongoose.Schema(
     healthConcern: {
       type: String,
       required: true,
-      enum: ['Hair Loss', 'Sexual Health', 'Beard Growth']
+      enum: ['Hair Loss', 'Sexual Health', 'Beard Growth', 'Hair thinning', 'Less volume on sides', 'Coin size patches', 'Medium widening', 'Advanced widening']
     },
     kit: { 
       type: String, 

@@ -221,7 +221,7 @@ const RecommendationPage = () => {
                   <div>
                     <p className="font-medium">Main Concern:</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-gray-600">{responses.mainConcern}</p>
+                      <p className="text-gray-600">{responses.healthConcern}</p>
                     </div>
                   </div>
                 </>
