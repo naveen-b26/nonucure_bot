@@ -26,7 +26,11 @@ import dy from "./pics/dandruffYes.jpg"
 import bs from "./pics/baldSpots.png"
 import thin from "./pics/thinning.png"
 import bot from "./pics/botImage.jpg"
-
+import ht from "./pics/hairThinning.jpg"
+import lV from "./pics/lessVolume.png"
+import mW from "./pics/MWidening.png"
+import aW from "./pics/AWidening.png"
+import cP from "./pics/Cpatches.png"
 function Form() {
   const { setUserId, formData, setFormData, responses, setResponses } = useStore()
   const navigate = useNavigate()
@@ -97,11 +101,11 @@ function Form() {
               input: true,
               name: "healthConcern",
               options: [
-                { label: "Hair thinning" },
-                { label: "Coin size patches" },
-                { label: "Medium widening" },
-                { label: "Advanced widening" },
-                { label: "Less volume on sides" },
+                { label: "Hair thinning",image:ht },
+                { label: "Coin size patches",image:cP },
+                { label: "Medium widening", image:mW},
+                { label: "Advanced widening",image:aW },
+                { label: "Less volume on sides",image:lV },
               ],
             }
           }
@@ -189,6 +193,50 @@ function Form() {
         input: true,
         name: "hairFall",
         options: [{ label: "Yes, extreme" }, { label: "Mild" }, { label: "No" }],
+      }
+    } else if (name==="hairFall" || name==="energyLevels") {
+      return {
+        content: "Have you experienced any of these in the last year?",
+        input: true,
+        name: "severeIllness",
+        options: [
+          {label:"Severe illness (e.g., dengue, malaria, typhoid)"},
+          {label:"Malaria"},
+          {label:"Heavy weight (fall/gain)"},
+          {label:"No"}
+        ]
+      }
+    } else if (name==="severeIllness") {
+      return {
+        content: "Is hair loss genetic in your family?",
+        input: true,
+        name: "hairLossGenetic",
+        options: [{label:"Yes"}, {label:"No"}]
+      }
+    } else if (name==="hairLossGenetic") {
+      return {
+        content: "Do you feel stressed?",
+        input: true,
+        name: "stressLevel",
+        options: [{label:"Yes"}, {label:"No"}, {label:"Moderate"}, {label:"High"}]
+      }
+    } else if (name === "stressLevel") {
+      return {
+        content: "How well do you sleep?",
+        input: true,
+        name: "sleepQuality",
+        options: [
+          {label:"6 to 8 hours of uninterrupted sleep"},
+          {label:"Disturbed sleep"},
+          {label:"Difficulty falling or staying asleep"}
+        ]
+      }
+    } else if (name === "sleepQuality" && formData.gender === "Male") {
+      return {
+        content: "Are you planning for a baby?",
+        input: true,
+        name: "planningForBaby",
+        options: [{label:"Yes"}, {lable:"No"}]
       }
     }
     return null
