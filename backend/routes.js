@@ -128,7 +128,7 @@ router.post('/recommend', async (req, res) => {
         } 
         // else if (["Coin size patches", "Medium widening"].includes(healthConcern)) {
         else if(healthConcern === "Coin size patches" || healthConcern === "Medium widening"){ 
-         recommendation.kit = "Complete Kit";
+        recommendation.kit = "Complete Kit";
           recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
         } else if (healthConcern === "Advanced widening") {
           return res.status(400).json({ message: "Consult a hair doctor for advanced widening." });
@@ -177,6 +177,42 @@ router.post('/recommend', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.post('/users', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: "Start date and end date are required" });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Ensure end of the day inclusion
+
+    // Fetch Male and Female Users
+    const maleUsers = await MaleUser.find({ createdAt: { $gte: start, $lte: end } });
+    const femaleUsers = await FemaleUser.find({ createdAt: { $gte: start, $lte: end } });
+
+    // Fetch Recommendations
+    const maleUserIds = maleUsers.map(user => user._id);
+    const femaleUserIds = femaleUsers.map(user => user._id);
+    
+    const maleRecommendations = await Recommendation.find({ userId: { $in: maleUserIds } });
+    const femaleRecommendations = await Recommendation.find({ userId: { $in: femaleUserIds } });
+
+    res.status(200).json({
+      maleUsers,
+      femaleUsers,
+      maleRecommendations,
+      femaleRecommendations
+    });
+  } catch (error) {
+    console.error("❌ Error fetching users and recommendations:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 module.exports = router;
