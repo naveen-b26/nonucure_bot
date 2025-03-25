@@ -180,7 +180,7 @@ router.post('/recommend', async (req, res) => {
 
 router.post('/users', async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate, startTime, endTime } = req.body;
 
     if (!startDate || !endDate) {
       return res.status(400).json({ error: "Start date and end date are required" });
@@ -188,7 +188,21 @@ router.post('/users', async (req, res) => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); // Ensure end of the day inclusion
+
+    // If time is provided, set the specific hours and minutes
+    if (startTime) {
+      const [hours, minutes] = startTime.split(':');
+      start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    } else {
+      start.setHours(0, 0, 0, 0); // Start of day if no time specified
+    }
+
+    if (endTime) {
+      const [hours, minutes] = endTime.split(':');
+      end.setHours(parseInt(hours), parseInt(minutes), 59, 999);
+    } else {
+      end.setHours(23, 59, 59, 999); // End of day if no time specified
+    }
 
     // Fetch Male and Female Users
     const maleUsers = await MaleUser.find({ createdAt: { $gte: start, $lte: end } });

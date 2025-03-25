@@ -88,6 +88,10 @@ function downloadList() {
         Phone: user.phone,
         Gender: user.gender,
         HealthConcern: user.healthConcern,
+        HairStage: user.hairStage || 'N/A',
+        Dandruff: user.dandruff || 'N/A',
+        DandruffStage: user.dandruffStage || 'N/A',
+        EnergyLevels: user.energyLevels || 'N/A',
         Recommendations: fetchedData.maleRecommendations
             .filter(rec => rec.userId === user._id)
             .map(rec => rec.kit)
@@ -101,6 +105,10 @@ function downloadList() {
         Phone: user.phone,
         Gender: user.gender,
         HealthConcern: user.healthConcern,
+        NaturalHair: user.naturalHair || 'N/A',
+        Goal: user.goal || 'N/A',
+        HairFall: user.hairFall || 'N/A',
+        MainConcern: user.mainConcern || 'N/A',
         Recommendations: fetchedData.femaleRecommendations
             .filter(rec => rec.userId === user._id)
             .map(rec => rec.kit)
