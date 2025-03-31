@@ -8,58 +8,127 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 20px;
+            color: #333;
         }
 
         .container {
-            max-width: 90%;
+            max-width: 100%;
             margin: auto;
+
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2em;
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
-        th,
-        td {
-            padding: 12px;
+        th, td {
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+
+        th:last-child, td:last-child {
+            border-right: none;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
         }
 
         .controls {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        .date-time-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .controls input,
-        .controls select,
+        .controls select {
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
         .controls button {
-            padding: 10px;
-            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+
+        .male-column {
+            background-color: rgba(0, 123, 255, 0.03);
+        }
+
+        .female-column {
+            background-color: rgba(255, 192, 203, 0.03);
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-time-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -68,10 +137,16 @@
     <div class="container">
         <h1>User Recommendations</h1>
         <div class="controls">
-            <input type="date" id="startDate" required>
-            <input type="date" id="endDate" required>
+            <div class="date-time-group">
+                <input type="date" id="startDate" required>
+                <input type="time" id="startTime">
+            </div>
+            <div class="date-time-group">
+                <input type="date" id="endDate" required>
+                <input type="time" id="endTime">
+            </div>
             <select id="genderFilter">
-                <option value="">All Genders</option>
+                <option value="">---Select Gender---</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
             </select>
@@ -86,7 +161,16 @@
                     <th>Phone</th>
                     <th>Gender</th>
                     <th>Health Concern</th>
+                    <th class="male-column">Hair Stage</th>
+                    <th class="male-column">Dandruff</th>
+                    <th class="male-column">Dandruff Stage</th>
+                    <th class="male-column">Thinning/Bald Spots</th>
+                    <th class="male-column">Energy Levels</th>
+                    <th class="female-column">Natural Hair</th>
+                    <th class="female-column">Goal</th>
+                    <th class="female-column">Hair Fall</th>
                     <th>Recommendations</th>
+                    <th>Products</th>
                 </tr>
             </thead>
             <tbody id="usersBody">
