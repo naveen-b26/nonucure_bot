@@ -236,7 +236,7 @@ function Form() {
         content: "Are you planning for a baby?",
         input: true,
         name: "planningForBaby",
-        options: [{label:"Yes"}, {lable:"No"}]
+        options: [{label:"Yes"}, {label:"No"}]
       }
     }
     return null
