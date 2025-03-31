@@ -140,14 +140,6 @@ router.post('/recommend', async (req, res) => {
       return res.status(400).json({ message: "Invalid gender specified" });
     }
 
-    // const existingRecommendation = await Recommendation.findOne({ userId, healthConcern });
-
-    // if (existingRecommendation) {
-    //   return res.status(409).json({
-    //     message: "Recommendation already exists",
-    //     existingRecommendation
-    //   });
-    // }
 
     // Save recommendation
     const recommendationDoc = new Recommendation({

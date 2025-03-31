@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // Base User Schema (common fields for both male and female)
 const baseUserSchema = {
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true},
   phone: { type: String, required: true },
   age: { type: Number, required: true },
   gender: { type: String, required: true },

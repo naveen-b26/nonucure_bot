@@ -94,7 +94,6 @@ const RecommendationPage = () => {
 
     try {
       const userId = localStorage.getItem("userId")
-      console.log("UserId from storage:", userId)
 
       if (!userId) {
         setError("User ID not found. Please complete the assessment first.")
