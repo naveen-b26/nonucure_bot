@@ -35,6 +35,11 @@ async function fetchUsers() {
         }
 
         fetchedData = await response.json(); // Store fetched data
+        //check if data is empty
+        if (!fetchedData || (!fetchedData.maleUsers?.length &&!fetchedData.femaleUsers?.length)) {
+            alert('No data available for the selected date range.');
+            return;
+        }
         populateTable(fetchedData, genderFilter);
     } catch (error) {
         console.error("Error fetching users:", error);
