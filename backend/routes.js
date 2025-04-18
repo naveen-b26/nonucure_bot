@@ -1,5 +1,5 @@
 const express = require('express');
-const { MaleUser, FemaleUser, Recommendation } = require('./models');
+const { MaleUser, FemaleUser, Recommendation, PersonalDetails } = require('./models');
 const router = express.Router();
 
 // Submit Form Route
@@ -7,21 +7,23 @@ router.post("/submit-form", async (req, res) => {
   try {
     console.log("Received Request Body:", req.body);
     const { formData, responses } = req.body;
-
     if (!formData || !responses) {
       return res.status(400).json({ error: "Missing form data or responses" });
     }
 
-    const { gender } = formData;
+    const { gender, name, email, phone, age } = formData;
     let savedUser;
 
-    // Combine formData and responses
+    // Prepare user data with personal details
     const userData = {
-      ...formData,
+      name,
+      email,
+      phone,
+      age,
+      gender,
       ...responses
     };
 
-    // Store in appropriate collection based on gender
     if (gender === 'Male') {
       const maleUser = new MaleUser(userData);
       savedUser = await maleUser.save();
@@ -70,12 +72,6 @@ router.post('/recommend', async (req, res) => {
     // First check gender, then handle specific cases
     if (gender === 'Male') {
       switch (healthConcern) {
-        case "Sexual Health":
-          recommendation.kit = 'Sexual Health Kit';
-          recommendation.products = ['Shilajit'];
-          recommendation.description = 'Shilajit is known to boost energy levels and improve overall vitality.';
-          break;
-
         case "Beard Growth":
           recommendation.kit = 'Beard Growth Kit';
           recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
@@ -108,7 +104,7 @@ router.post('/recommend', async (req, res) => {
 
           // Handle energy levels
           if (energyLevels === "Medium" || energyLevels === "Low") {
-            recommendation.products.push("Shilajit");
+            recommendation.products.push("Energy Booster");
           }
           break;
 

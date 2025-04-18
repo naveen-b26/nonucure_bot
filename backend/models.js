@@ -1,19 +1,18 @@
 const mongoose = require("mongoose");
 
-// Base User Schema (common fields for both male and female)
-const baseUserSchema = {
-  name: { type: String, required: true },
-  email: { type: String, required: true},
-  phone: { type: String, required: true },
-  age: { type: Number, required: true },
-  gender: { type: String, required: true },
-};
-
 // Male User Schema
 const maleUserSchema = new mongoose.Schema(
   {
-    ...baseUserSchema,
-    healthConcern: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    age: { type: Number, required: true },
+    gender: { type: String, required: true },
+    healthConcern: { 
+      type: String, 
+      required: true,
+      enum: ["Hair Loss","Beard Growth"]
+    },
     hairStage: { type: String },
     dandruff: { type: String },
     dandruffStage: { type: String },
@@ -26,11 +25,15 @@ const maleUserSchema = new mongoose.Schema(
 // Female User Schema
 const femaleUserSchema = new mongoose.Schema(
   {
-    ...baseUserSchema,
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    age: { type: Number, required: true },
+    gender: { type: String, required: true },
     healthConcern: { 
       type: String, 
       required: true,
-      enum: ["Hair Loss","Sexual Health","Beard Growth",'Hair thinning', 'Coin size patches', 'Medium widening', 'Advanced widening', 'Less volume on sides']
+      enum: ['Hair thinning', 'Coin size patches', 'Medium widening', 'Advanced widening', 'Less volume on sides']
     },
     naturalHair: { type: String },
     goal: { type: String },
@@ -55,7 +58,7 @@ const recommendationSchema = new mongoose.Schema(
     healthConcern: {
       type: String,
       required: true,
-      enum: ['Hair Loss', 'Sexual Health', 'Beard Growth', 'Hair thinning', 'Less volume on sides', 'Coin size patches', 'Medium widening', 'Advanced widening']
+      enum: ['Hair Loss', 'Beard Growth', 'Hair thinning', 'Less volume on sides', 'Coin size patches', 'Medium widening', 'Advanced widening']
     },
     kit: { 
       type: String, 
@@ -74,6 +77,7 @@ const recommendationSchema = new mongoose.Schema(
   },
   { timestamps: true, collection: "recommendations" }
 );
+
 
 const MaleUser = mongoose.model("MaleUser", maleUserSchema);
 const FemaleUser = mongoose.model("FemaleUser", femaleUserSchema);

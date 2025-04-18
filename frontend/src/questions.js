@@ -3,7 +3,7 @@ export const questions = {
       {
         id: "healthConcern",
         text: "Select your primary health concern:",
-        options: ["Hair Loss", "Sexual Health", "Beard Growth"],
+        options: ["Hair Loss", "Beard Growth"],
       },
       {
         id: "hairStage",
