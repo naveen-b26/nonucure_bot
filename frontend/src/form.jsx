@@ -60,7 +60,7 @@ function Form() {
         const existingUserId = localStorage.getItem("userId");
         if (!existingUserId) {
           axios
-            .post(`http://localhost:5000/api/submit-form`, {
+            .post(`https://nonucure-bot.vercel.app/api/submit-form`, {
               formData,
               responses,
             })
@@ -424,8 +424,6 @@ function Form() {
     setFormData(updatedFormData);
     setResponses(updatedResponses);
 
-    // Save partial data when basic details are completed (after gender selection)
-    
 
     // If health concern is "Beard Growth", submit immediately
     if (
@@ -472,7 +470,7 @@ function Form() {
   ) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/submit-form`,
+        `https://nonucure-bot.vercel.app/api/submit-form`,
         {
           formData: updatedFormData,
           responses: updatedResponses,
