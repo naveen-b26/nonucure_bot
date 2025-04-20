@@ -52,117 +52,64 @@ router.post("/submit-form", async (req, res) => {
 // Recommend Route
 router.post('/recommend', async (req, res) => {
   try {
-    const { userId, gender, healthConcern, hairStage, dandruff, dandruffStage,
-      energyLevels, naturalHair, goal, hairFall, mainConcern } = req.body;
-      console.log("rr",healthConcern);
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    // Validate user exists in appropriate collection
-    const UserModel = gender === 'Male' ? MaleUser : FemaleUser;
-    const user = await UserModel.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    const { 
+      userId, 
+      gender, 
+      healthConcern, 
+      medicalConditions, 
+      planningForBaby,
+      // ...other params
+    } = req.body;
 
     let recommendation = {};
 
-    // First check gender, then handle specific cases
     if (gender === 'Male') {
       switch (healthConcern) {
-        case "Beard Growth":
-          recommendation.kit = 'Beard Growth Kit';
-          recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-          recommendation.description = 'This combination helps stimulate beard growth and provides essential nutrients.';
-          break;
-
         case "Hair Loss":
-          // Handle male hair loss stages
-          if (hairStage === "Stage 2 (Hair line receding)" || hairStage === "Stage 1 (Slightly hair loss)") {
-            recommendation.kit = 'Classic Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-          } else if (hairStage === "Stage 3 (Developing bald spot)" || hairStage === "Stage 4 (Visible bald spot)") {
-            recommendation.kit = 'Complete Hair Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-          } else if (["Stage 5 (Balding from crown area)", "Stage 6 (Advanced balding)", "Heavy Hair Fall", "Coin Size Patch"].includes(hairStage)) {
-            recommendation.kit = 'Hair Restoration Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
+          // Check for BP condition
+          if (medicalConditions && medicalConditions.includes('High Blood Pressure (BP)')) {
+            recommendation.kit = 'Anti-Dandruff Kit';
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+            recommendation.warning = 'Classic kit is not recommended for BP patients';
           }
-
-          // Handle dandruff conditions
-          if (dandruff === "Yes" && dandruffStage && ["Low", "Mild", "Moderate", "Severe"].includes(dandruffStage)) {
-            if (!recommendation.kit) {
-              recommendation.kit = "Anti-Dandruff Kit";
-              recommendation.products = ["Gummies", "Shampoo", "Conditioner"];
-            }
-            if (dandruffStage === "Severe") {
-              recommendation.products.push("Anti-Dandruff Serum");
-            }
+          // Check for planning baby
+          else if (planningForBaby === 'Yes') {
+            recommendation.kit = 'Basic Hair Growth Kit';
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+            recommendation.warning = 'Finasteride is not recommended while planning for a baby';
           }
-
-          // Handle energy levels
-          if (energyLevels === "Medium" || energyLevels === "Low") {
-            recommendation.products.push("Energy Booster");
+          else {
+            // Normal recommendation logic
+            recommendation.kit = 'Complete Hair Growth Kit';
+            recommendation.products = ['Minoxidil 5%', 'Finasteride', 'Biotin Gummies'];
           }
           break;
 
-        default:
-          return res.status(400).json({ message: "Invalid health concern specified for male" });
+        case "Beard Growth":
+          // Similar logic for beard growth
+          if (medicalConditions && medicalConditions.includes('High Blood Pressure (BP)')) {
+            recommendation.kit = 'Basic Beard Growth Kit';
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+          } else {
+            recommendation.kit = 'Complete Beard Growth Kit';
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+          }
+          break;
+
+        // ... other cases
       }
-    } else if (gender === 'Female') {
-      // Handle female-specific cases
-      if (goal === "Control hair fall") {
-        recommendation.kit = "Active Hair Growth Kit";
-        recommendation.products = ["Gummies", "Shampoo", "Hair Growth Serum"];
-      } else if (goal === "Regrow Hair") {
-        // if (["Hair thinning", "Less volume on sides"].includes(healthConcern)) {
-        if( healthConcern === "Hair thinning" || healthConcern === "Less volume on sides") {
-          recommendation.kit = "Classic Kit";
-          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
-        } 
-        // else if (["Coin size patches", "Medium widening"].includes(healthConcern)) {
-        else if(healthConcern === "Coin size patches" || healthConcern === "Medium widening"){ 
-        recommendation.kit = "Complete Kit";
-          recommendation.products = ["Gummies", "Sinibis", "Minoxidil 5%"];
-        } else if (healthConcern === "Advanced widening") {
-          return res.status(400).json({ message: "Consult a hair doctor for advanced widening." });
-        }
-      } else {
-        return res.status(400).json({ message: "Invalid goal specified for female" });
-      }
-    } else {
-      return res.status(400).json({ message: "Invalid gender specified" });
     }
 
+    // Add warning messages if applicable
+    if (medicalConditions && medicalConditions.includes('High Blood Pressure (BP)')) {
+      recommendation.warning = 'Modified recommendation due to blood pressure condition';
+    }
 
-    // Save recommendation
-    const recommendationDoc = new Recommendation({
-      userId,
-      userGender: gender,
-      healthConcern,
-      kit: recommendation.kit,
-      products: recommendation.products,
-      description: recommendation.description,
-      ...(healthConcern === 'Hair Loss' && {
-        hairStage,
-        dandruffStage,
-        energyLevels
-      })
-    });
-
-    const savedRecommendation = await recommendationDoc.save();
-    console.log("✅ Recommendation Saved:", savedRecommendation);
-
-    res.json({
-      ...recommendation,
-      recommendationId: savedRecommendation._id
-    });
+    res.json(recommendation);
 
   } catch (error) {
-    console.error("❌ Error in recommendation:", error);
-    res.status(500).json({ error: error.message });
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

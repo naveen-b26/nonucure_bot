@@ -18,6 +18,10 @@ const maleUserSchema = new mongoose.Schema(
     dandruffStage: { type: String },
     thinningOrBaldSpots: { type: String },
     energyLevels: { type: String },
+    medicalConditions: [{
+      type: String,
+      enum: ['High Blood Pressure (BP)', 'Diabetes (Sugar)', 'Thyroid Issues', 'None of the above']
+    }]
   },
   { timestamps: true, collection: "male_users" }
 );
@@ -39,6 +43,10 @@ const femaleUserSchema = new mongoose.Schema(
     goal: { type: String },
     hairFall: { type: String },
     mainConcern: { type: String },
+    medicalConditions: [{
+      type: String,
+      enum: ['High Blood Pressure (BP)', 'Diabetes (Sugar)', 'Thyroid Issues', 'None of the above']
+    }]
   },
   { timestamps: true, collection: "female_users" }
 );

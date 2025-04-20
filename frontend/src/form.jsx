@@ -304,7 +304,21 @@ function Form() {
         name: "planningForBaby",
         options: [{ label: "Yes" }, { label: "No" }],
       };
+    }else if (name === "planningForBaby") {
+      return {
+        content: "Do you have any medical conditions?",
+        input: true,
+        multiple: true,
+        name: "medicalConditions",
+        options: [
+          { label: "High Blood Pressure (BP)" },
+          { label: "Diabetes (Sugar)" },
+          { label: "Thyroid Issues" },
+          { label: "None of the above" },
+        ],
+      };
     }
+
     return null;
   };
 
@@ -448,21 +462,6 @@ function Form() {
 
     setCurrentInput("");
   };
-
-  useEffect(() => {
-    if (step > 0) {
-      const lastAnswer = Object.entries(formData).slice(-1)[0];
-      if (lastAnswer) {
-        const [name, value] = lastAnswer;
-        const nextContent = getNextQuestion(name, value);
-        if (nextContent) {
-          setMessages((prev) => [...prev, { type: "bot", ...nextContent }]);
-        }
-      } else {
-        handleSubmit();
-      }
-    }
-  }, [formData]);
 
   const handleSubmit = async (
     updatedFormData = formData,

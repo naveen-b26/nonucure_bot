@@ -26,6 +26,14 @@ import shilajit from "./pics/shilajit.jpg"
 import hgw from "./pics/hairGrowthSerum.jpg"
 import minibis from "./pics/minibis.jpg"
 
+// Add this price mapping object at the top of your component
+const kitPrices = {
+  "Basic Hair Growth Kit": 1699,
+  "Classic Kit": 1499,
+  "Anti-Dandruff Kit": 1200,
+  "Active Hair Growth Kit": 1299
+};
+
 const RecommendationPage = () => {
   const imageMap = {
     healthConcern: {
@@ -101,7 +109,7 @@ const RecommendationPage = () => {
         return
       }
 
-      const response = await axios.post(`https://nonucure-bot.vercel.app/api/recommend`, {
+      const response = await axios.post(`http://localhost:5000/api/recommend`, {
         userId: userId,
         gender: formData.gender,
         healthConcern: responses.healthConcern,
@@ -113,6 +121,8 @@ const RecommendationPage = () => {
         goal: responses.goal,
         hairFall: responses.hairFall,
         mainConcern: responses.mainConcern,
+        medicalConditions: responses.medicalConditions, // Add this
+        planningForBaby: responses.planningForBaby // Add this
       })
       localStorage.removeItem("userId")
       setRecommendation(response.data)
@@ -194,6 +204,16 @@ const RecommendationPage = () => {
                     <span className="text-gray-800">{responses.energyLevels}</span>
                   </div>
                 </div>
+                
+                {responses.medicalConditions && (
+                <div className="p-4 rounded-lg bg-gray-50">
+                  <p className="font-medium text-gray-700 mb-2"></p>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${responses.medicalConditions ? "bg-red-500" : "bg-green-500"}`}></div>
+                    <span className="text-gray-800">{responses.medicalConditions}</span>
+                  </div>
+                </div>
+        )}   
               </>
             )}
 
@@ -237,57 +257,6 @@ const RecommendationPage = () => {
                 </div>
               </>
             )}
-             
-
-          {/* {formData.gender === "Female" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="flex flex-col items-center">
-                <p className="font-medium mb-2">Natural Hair Type:</p>
-                <div className="flex flex-col items-center">
-                  {imageMap.naturalHair[responses.naturalHair] && (
-                    <div className="w-32 h-32 flex items-center justify-center mb-2">
-                      <img
-                        src={imageMap.naturalHair[responses.naturalHair] || "/placeholder.svg"}
-                        alt="Hair Type"
-                        className="max-w-full max-h-full object-contain"
-                      />
-                    </div>
-                  )}
-                  <p className="text-gray-600 text-center">{responses.naturalHair}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <p className="font-medium mb-2">Hair Goal:</p>
-                <div className="w-32 h-32 flex items-center justify-center mb-2">
-                  <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center">
-                    <span className="text-lg font-medium text-gray-700">{responses.goal}</span>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-center">{responses.goal}</p>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <p className="font-medium mb-2">Hair Fall:</p>
-                <div className="w-32 h-32 flex items-center justify-center mb-2">
-                  <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center">
-                    <span className="text-lg font-medium text-gray-700">{responses.hairFall}</span>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-center">{responses.hairFall}</p>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <p className="font-medium mb-2">Main Concern:</p>
-                <div className="w-32 h-32 flex items-center justify-center mb-2">
-                  <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center text-center px-2">
-                    <span className="text-sm font-medium text-gray-700">{responses.healthConcern}</span>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-center">{responses.healthConcern}</p>
-              </div>
-            </div>
-          )} */}
           </div>
 
          
@@ -298,8 +267,16 @@ const RecommendationPage = () => {
           {/* Recommendation Section */}
           {recommendation && (
             <div className="bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Your Treatment is</h2>
+              <h2 className="text-xl font-semibold mb-4">Your Treatment is : {recommendation.kit}</h2>
               <div className="space-y-4">
+                {recommendation.warning && (
+                  <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-yellow-700 font-medium">
+                      <span className="mr-2">⚠️</span>
+                      {recommendation.warning}
+                    </p>
+                  </div>
+                )}
                 {recommendation.products?.map((product, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-all">
                     <div className="flex items-center space-x-4">
@@ -326,19 +303,13 @@ const RecommendationPage = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-lg">
-                        {product === "Sinibis" && "₹399.00"}
-                        {product === "Minoxidil 5%" && "₹650.00"}
-                        {product === "Biotin Gummies" && "₹600.00"}
-                      </p>
-                    </div>
+                    
                   </div>
                 ))}
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Subtotal<br/><span className="text-xs">(inclusive of all taxes)</span></span>
-                    <span className="font-semibold text-xl">₹1650.00</span>
+                    <span className="text-black">Subtotal<br/><span className="text-xs">(inclusive of all taxes)</span></span>
+                    <span className="font-semibold text-xl">₹{kitPrices[recommendation.kit]}.00</span>
                   </div>
                 </div>
                 <button className="w-full py-3 bg-[#8BC34A] text-white rounded-lg font-medium hover:bg-[#7CB342] transition-colors">
