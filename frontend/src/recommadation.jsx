@@ -1,38 +1,32 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import useStore from "./store"
-import axios from "axios"
-import sH from "./pics/sexualHealth.png"
-import bW from "./pics/beardGrowth.png"
-import hL from "./pics/hairloss.png"
-import s1 from "./pics/stage-1.png"
-import s2 from "./pics/stage-2.png"
-import s3 from "./pics/stage-3.png"
-import s4 from "./pics/stage-4.png"
-import s5 from "./pics/stage-5.png"
-import s6 from "./pics/stage-6.png"
-import s7 from "./pics/stage-7.png"
-import dn from "./pics/dandruffNo.png"
-import dy from "./pics/dandruffYes.jpg"
-import sth from "./pics/stH.png"
-import wy from "./pics/wavyHair.jpg"
-import cy from "./pics/curlyHair.jpg"
-import co from "./pics/coilyHair.png"
-import Gummies from "./pics/gummies.jpg"
-import Sinibis from "./pics/sinibis.jpg"
-import shilajit from "./pics/shilajit.jpg"
-import hgw from "./pics/hairGrowthSerum.jpg"
-import minibis from "./pics/minibis.jpg"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import useStore from "./store";
+import axios from "axios";
+import sH from "./pics/sexualHealth.png";
+import bW from "./pics/beardGrowth.png";
+import hL from "./pics/hairloss.png";
+import s1 from "./pics/stage-1.png";
+import s2 from "./pics/stage-2.png";
+import s3 from "./pics/stage-3.png";
+import s4 from "./pics/stage-4.png";
+import s5 from "./pics/stage-5.png";
+import s6 from "./pics/stage-6.png";
+import s7 from "./pics/stage-7.png";
+import dn from "./pics/dandruffNo.png";
+import dy from "./pics/dandruffYes.jpg";
+import sth from "./pics/stH.png";
+import wy from "./pics/wavyHair.jpg";
+import cy from "./pics/curlyHair.jpg";
+import co from "./pics/coilyHair.png";
+import Gummies from "./pics/gummies.jpg";
+import Sinibis from "./pics/sinibis.jpg";
+import shilajit from "./pics/shilajit.jpg";
+import hgw from "./pics/hairGrowthSerum.jpg";
+import minibis from "./pics/minibis.jpg";
+import shampoo from "./pics/anti-dandruff(ketoconazole-shampoo).jpg"
 
-// Add this price mapping object at the top of your component
-const kitPrices = {
-  "Basic Hair Growth Kit": 1699,
-  "Classic Kit": 1499,
-  "Anti-Dandruff Kit": 1200,
-  "Active Hair Growth Kit": 1299
-};
 
 const RecommendationPage = () => {
   const imageMap = {
@@ -60,7 +54,7 @@ const RecommendationPage = () => {
       Curly: cy,
       Coily: co,
     },
-  }
+  };
 
   const productImages = {
     Gummies: Gummies,
@@ -69,44 +63,60 @@ const RecommendationPage = () => {
     "Minoxidil 5%": minibis,
     "Hair Growth Serum": hgw,
     Shilajit: shilajit,
-  }
+    Shampoo: shampoo,
+  };
 
-  const { formData, responses, userId } = useStore()
-  const [recommendation, setRecommendation] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const navigate = useNavigate()
+  const { formData, responses, userId } = useStore();
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const recommendedKits = [
+    {
+      name: 'Basic Hair Growth Kit',
+      url: "https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r"
+    },
+    {
+      name: 'Complete Hair Growth Kit',
+      url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
+    },
+    {
+      name: 'Anti-Dandruff Kit',
+      url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
+    },
+  ];
+  
 
   useEffect(() => {
     // Check if we have the required data
     if (!formData || !responses) {
-      console.log("Missing form data, redirecting to form")
-      navigate("/")
-      return
+      console.log("Missing form data, redirecting to form");
+      navigate("/");
+      return;
     }
 
     const fetchData = async () => {
       try {
-        await fetchRecommendation()
+        await fetchRecommendation();
       } catch (error) {
-        console.error("Error fetching recommendation:", error)
+        console.error("Error fetching recommendation:", error);
       }
-    }
+    };
 
-    fetchData()
-  }, [formData, responses])
+    fetchData();
+  }, [formData, responses]);
 
   const fetchRecommendation = async () => {
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
 
     try {
-      const userId = localStorage.getItem("userId")
+      const userId = localStorage.getItem("userId");
 
       if (!userId) {
-        setError("User ID not found. Please complete the assessment first.")
-        setLoading(false)
-        return
+        setError("User ID not found. Please complete the assessment first.");
+        setLoading(false);
+        return;
       }
 
       const response = await axios.post(`http://localhost:5000/api/recommend`, {
@@ -122,27 +132,30 @@ const RecommendationPage = () => {
         hairFall: responses.hairFall,
         mainConcern: responses.mainConcern,
         medicalConditions: responses.medicalConditions, // Add this
-        planningForBaby: responses.planningForBaby // Add this
-      })
-      localStorage.removeItem("userId")
-      setRecommendation(response.data)
+        planningForBaby: responses.planningForBaby, // Add this
+      });
+      localStorage.removeItem("userId");
+      setRecommendation(response.data);
+      console.log("Recommendation:", response.data);
     } catch (error) {
-      console.error("Recommendation error:", error)
-      setError("Error generating recommendations. Please try again later.")
+      console.error("Recommendation error:", error);
+      setError("Error generating recommendations. Please try again later.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="text-center p-6 bg-white rounded-lg shadow-lg">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-xl font-medium text-gray-700">Loading your personalized recommendations...</p>
+          <p className="text-xl font-medium text-gray-700">
+            Loading your personalized recommendations...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -151,123 +164,179 @@ const RecommendationPage = () => {
         <div className="w-[80%] bg-white shadow-lg rounded-lg p-6 mb-6">
           <h1 className="text-2xl font-bold mb-2">Assessment Report</h1>
           <p className="text-gray-600 mb-4">You Are Currently On</p>
-          <h2 className="text-xl font-semibold mb-4">{formData.gender === "Male" ? `1 Of Male Pattern  ${formData.healthConcern}` : "Female Pattern Hair Loss"}</h2>
-          
-          <div className="mb-6">
-            <p className="font-medium text-gray-700 mb-2">Treatment Duration</p>
-            <p className="text-lg font-semibold">2 Months</p>
-          </div>
+          <h2 className="text-xl font-semibold mb-4">
+            {formData.gender === "Male"
+              ? `1 Of Male Pattern  ${formData.healthConcern}`
+              : "Female Pattern Hair Loss"}
+          </h2>
 
-          <div className="mb-6">
-            <p className="font-medium text-gray-700 mb-2">Hair Regrowth Possibility</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div className="bg-green-600 h-2.5 rounded-full" style={{ width: "100%" }}></div>
-            </div>
-            <p className="text-right text-sm text-gray-600 mt-1">100%</p>
-          </div>
+        
+          {/* Assessment Answers Section */}
+          <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Your Assessment Details
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
+              {formData.gender === "Male" &&
+                responses.healthConcern === "Hair Loss" && (
+                  <>
+                    <div className="p-4 rounded-lg bg-gray-50">
+                      <p className="font-medium text-gray-700 mb-2">
+                        Hair Stage
+                      </p>
+                      <div className=" flex flex-col items-center space-x-3">
+                        {imageMap.hairStage[responses.hairStage] && (
+                          <img
+                            src={imageMap.hairStage[responses.hairStage]}
+                            alt="Hair Stage"
+                            className="w-24 h-24 object-cover rounded"
+                          />
+                        )}
+                        <span className="text-gray-800">
+                          {responses.hairStage}
+                        </span>
+                      </div>
+                    </div>
 
-        {/* Assessment Answers Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Your Assessment Details</h2>
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {formData.gender === "Male" && responses.healthConcern === "Hair Loss" && (
-              <>
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Hair Stage</p>
-                  <div className="flex items-center space-x-3">
-                    {imageMap.hairStage[responses.hairStage] && (
-                      <img src={imageMap.hairStage[responses.hairStage]} alt="Hair Stage" className="w-16 h-16 object-cover rounded" />
+                    <div className="p-4 rounded-lg bg-gray-50">
+                      <p className="font-medium text-gray-700 mb-2">
+                        Dandruff Status
+                      </p>
+                      <div className="flex flex-col items-center space-x-3">
+                        {imageMap.dandruff[responses.dandruff] && (
+                          <img
+                            src={imageMap.dandruff[responses.dandruff]}
+                            alt="Dandruff Status"
+                            className="w-24 h-24 object-cover rounded"
+                          />
+                        )}
+                        <div>
+                          <span className="text-gray-800">
+                            {responses.dandruff}
+                          </span>
+                          {responses.dandruff === "Yes" && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              Stage: {responses.dandruffStage}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-gray-50">
+                      <p className="font-medium text-gray-700 mb-2">
+                        Energy Levels
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className={`w-3 h-3 rounded-full ${
+                            responses.energyLevels === "High"
+                              ? "bg-green-500"
+                              : responses.energyLevels === "Medium"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                          }`}
+                        ></div>
+                        <span className="text-gray-800">
+                          {responses.energyLevels}
+                        </span>
+                      </div>
+                    </div>
+
+                    {responses.medicalConditions && (
+                      <div className="p-4 rounded-lg bg-gray-50">
+                        <p className="font-medium text-gray-700 mb-2">Medical Conditions</p>
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${
+                              responses.medicalConditions
+                                ? "bg-red-500"
+                                : "bg-green-500"
+                            }`}
+                          ></div>
+                          <span className="text-gray-800">
+                            {responses.medicalConditions}
+                          </span>
+                        </div>
+                      </div>
                     )}
-                    <span className="text-gray-800">{responses.hairStage}</span>
-                  </div>
-                </div>
+                  </>
+                )}
 
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Dandruff Status</p>
-                  <div className="flex items-center space-x-3">
-                    {imageMap.dandruff[responses.dandruff] && (
-                      <img src={imageMap.dandruff[responses.dandruff]} alt="Dandruff Status" className="w-16 h-16 object-cover rounded" />
-                    )}
-                    <div>
-                      <span className="text-gray-800">{responses.dandruff}</span>
-                      {responses.dandruff === "Yes" && (
-                        <p className="text-sm text-gray-600 mt-1">Stage: {responses.dandruffStage}</p>
+              {formData.gender === "Male" &&
+                responses.healthConcern === "Beard Growth" && (
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">
+                      Health Concern
+                    </p>
+                    <div className="flex items-center space-x-3">
+                      {imageMap.healthConcern[responses.healthConcern] && (
+                        <img
+                          src={imageMap.healthConcern[responses.healthConcern]}
+                          alt="Health Concern"
+                          className="w-16 h-16 object-cover rounded"
+                        />
                       )}
+                      <span className="text-gray-800">
+                        {responses.healthConcern}
+                      </span>
                     </div>
                   </div>
-                </div>
+                )}
 
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Energy Levels</p>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${responses.energyLevels === "High" ? "bg-green-500" : responses.energyLevels === "Medium" ? "bg-yellow-500" : "bg-red-500"}`}></div>
-                    <span className="text-gray-800">{responses.energyLevels}</span>
+              {formData.gender === "Female" && (
+                <>
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">
+                      Natural Hair Type
+                    </p>
+                    <div className="flex items-center space-x-3">
+                      {imageMap.naturalHair[responses.naturalHair] && (
+                        <img
+                          src={imageMap.naturalHair[responses.naturalHair]}
+                          alt="Natural Hair"
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      )}
+                      <span className="text-gray-800">
+                        {responses.naturalHair}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                
-                {responses.medicalConditions && (
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2"></p>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${responses.medicalConditions ? "bg-red-500" : "bg-green-500"}`}></div>
-                    <span className="text-gray-800">{responses.medicalConditions}</span>
+
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">Hair Goal</p>
+                    <span className="text-gray-800">{responses.goal}</span>
                   </div>
-                </div>
-        )}   
-              </>
-            )}
 
-            {formData.gender === "Male" && responses.healthConcern === "Beard Growth" && (
-              <div className="p-4 rounded-lg bg-gray-50">
-                <p className="font-medium text-gray-700 mb-2">Health Concern</p>
-                <div className="flex items-center space-x-3">
-                  {imageMap.healthConcern[responses.healthConcern] && (
-                    <img src={imageMap.healthConcern[responses.healthConcern]} alt="Health Concern" className="w-16 h-16 object-cover rounded" />
-                  )}
-                  <span className="text-gray-800">{responses.healthConcern}</span>
-                </div>
-              </div>
-            )}
-
-            {formData.gender === "Female" && (
-              <>
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Natural Hair Type</p>
-                  <div className="flex items-center space-x-3">
-                    {imageMap.naturalHair[responses.naturalHair] && (
-                      <img src={imageMap.naturalHair[responses.naturalHair]} alt="Natural Hair" className="w-16 h-16 object-cover rounded" />
-                    )}
-                    <span className="text-gray-800">{responses.naturalHair}</span>
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">
+                      Hair Fall Status
+                    </p>
+                    <span className="text-gray-800">{responses.hairFall}</span>
                   </div>
-                </div>
 
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Hair Goal</p>
-                  <span className="text-gray-800">{responses.goal}</span>
-                </div>
-
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Hair Fall Status</p>
-                  <span className="text-gray-800">{responses.hairFall}</span>
-                </div>
-
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="font-medium text-gray-700 mb-2">Main Concern</p>
-                  <span className="text-gray-800">{responses.healthConcern}</span>
-                </div>
-              </>
-            )}
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">
+                      Main Concern
+                    </p>
+                    <span className="text-gray-800">
+                      {responses.healthConcern}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-
-         
-        </div>
         </div>
 
         <div className="w-[45%]">
           {/* Recommendation Section */}
           {recommendation && (
             <div className="bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Your Treatment is : {recommendation.kit}</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Your Treatment is : {recommendation.kit}
+              </h2>
               <div className="space-y-4">
                 {recommendation.warning && (
                   <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -278,7 +347,10 @@ const RecommendationPage = () => {
                   </div>
                 )}
                 {recommendation.products?.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-all">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-all"
+                  >
                     <div className="flex items-center space-x-4">
                       {productImages[product] && (
                         <div className="w-20 h-20 flex-shrink-0">
@@ -297,35 +369,44 @@ const RecommendationPage = () => {
                           {product === "Biotin Gummies" && "Nutrition"}
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
-                          {product === "Sinibis" && "Clinically proven molecule for dandruff"}
-                          {product === "Minoxidil 5%" && "Prevents DHT led hair damage"}
-                          {product === "Biotin Gummies" && "Delicious gummies packed with hair growth nutrients"}
+                          {product === "Sinibis" &&
+                            "Clinically proven molecule for dandruff"}
+                          {product === "Minoxidil 5%" &&
+                            "Prevents DHT led hair damage"}
+                          {product === "Biotin Gummies" &&
+                            "Delicious gummies packed with hair growth nutrients"}
                         </p>
                       </div>
                     </div>
-                    
                   </div>
                 ))}
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-black">Subtotal<br/><span className="text-xs">(inclusive of all taxes)</span></span>
-                    <span className="font-semibold text-xl">₹{kitPrices[recommendation.kit]}.00</span>
+                
+                
+                {recommendedKits.filter((kit)=> kit.name===recommendation.kit).map((kit)=>(
+                  <div key={kit.name} className="kit-card">
+                    <a href={kit.url} target="_blank" rel="noopener noreferrer">
+                      <button className=" bg-green-600 py-2 rounded-sm w-full text-white ">Buy Now</button>
+                    </a>
                   </div>
-                </div>
-                <button className="w-full py-3 bg-[#8BC34A] text-white rounded-lg font-medium hover:bg-[#7CB342] transition-colors">
-                  Buy Now
-                </button>
-                <p className="text-center text-sm text-gray-500 mt-2">All of our products are GMP & ISO 9001 certified</p>
+                ))}
+
+                <p className="text-center text-sm text-gray-500 mt-2">
+                  All of our products are GMP & ISO 9001 certified
+                </p>
               </div>
 
               {recommendation.advice && (
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <p className="text-lg font-medium text-green-600 mb-4 text-center">Expert Advice</p>
+                  <p className="text-lg font-medium text-green-600 mb-4 text-center">
+                    Expert Advice
+                  </p>
                   <ul className="space-y-3">
                     {recommendation.advice.map((tip, index) => (
                       <li key={index} className="flex items-start">
                         <span className="inline-block w-6 h-6 bg-green-100 rounded-full flex-shrink-0 flex items-center justify-center mr-3 mt-1">
-                          <span className="text-green-600 text-sm">{index + 1}</span>
+                          <span className="text-green-600 text-sm">
+                            {index + 1}
+                          </span>
                         </span>
                         <p className="text-gray-800 flex-grow">{tip}</p>
                       </li>
@@ -345,10 +426,7 @@ const RecommendationPage = () => {
         </div>
       </div>
     </div>
-    
-  )
-  
-}
+  );
+};
 
-export default RecommendationPage
-
+export default RecommendationPage;
