@@ -158,25 +158,37 @@ const RecommendationPage = () => {
     );
   }
 
+  // Update the main container and layout styles
   return (
-    <div className="flex flex-col items-center p-4 sm:p-6 bg-gray-100 min-h-screen">
-      <div className="w-full flex gap-6">
-        <div className="w-[80%] bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold mb-2">Assessment Report</h1>
-          <p className="text-gray-600 mb-4">You Are Currently On</p>
-          <h2 className="text-xl font-semibold mb-4">
-            {formData.gender === "Male"
-              ? `1 Of Male Pattern  ${formData.healthConcern}`
-              : "Female Pattern Hair Loss"}
-          </h2>
-
+    <div className="flex flex-col items-center p-2 sm:p-4 md:p-6 bg-gray-100 min-h-screen">
+      <div className="w-full flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-7xl mx-auto">
+        {/* Left Section - Assessment Details */}
         
-          {/* Assessment Answers Section */}
-          <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">
+        <div className="w-full lg:w-[60%] bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4 lg:mb-0">
+          {/* User Info Header */}
+          <div className="border-b pb-4 mb-6">
+          
+            <div className="flex items-center justify-between mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold">Assessment Report</h1>
+             
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-gray-600">You Are Currently On</p>
+             
+            </div>
+            <h2 className="text-lg sm:text-xl font-semibold mt-2 text-green-600">
+              {formData.gender === "Male"
+                ? `Male Pattern ${formData.healthConcern}`
+                : "Female Pattern Hair Loss"}
+            </h2>
+          </div>
+
+          {/* Assessment Details Section */}
+          <div className="bg-white rounded-lg">
+            <h2 className="text-lg sm:text-xl font-semibold mb-6 text-gray-800">
               Your Assessment Details
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {formData.gender === "Male" &&
                 responses.healthConcern === "Hair Loss" && (
                   <>
@@ -184,12 +196,12 @@ const RecommendationPage = () => {
                       <p className="font-medium text-gray-700 mb-2">
                         Hair Stage
                       </p>
-                      <div className=" flex flex-col items-center space-x-3">
+                      <div className=" flex lg:flex-col items-center space-x-3">
                         {imageMap.hairStage[responses.hairStage] && (
                           <img
                             src={imageMap.hairStage[responses.hairStage]}
                             alt="Hair Stage"
-                            className="w-24 h-24 object-cover rounded"
+                            className="w-16 h-16 lg:w-24 lg:h-24 object-cover rounded"
                           />
                         )}
                         <span className="text-gray-800">
@@ -202,12 +214,12 @@ const RecommendationPage = () => {
                       <p className="font-medium text-gray-700 mb-2">
                         Dandruff Status
                       </p>
-                      <div className="flex flex-col items-center space-x-3">
+                      <div className="flex lg:flex-col items-center space-x-3">
                         {imageMap.dandruff[responses.dandruff] && (
                           <img
                             src={imageMap.dandruff[responses.dandruff]}
                             alt="Dandruff Status"
-                            className="w-24 h-24 object-cover rounded"
+                            className="w-16 h-16 lg:w-24 lg:h-24 object-cover rounded"
                           />
                         )}
                         <div>
@@ -330,85 +342,100 @@ const RecommendationPage = () => {
           </div>
         </div>
 
-        <div className="w-[45%]">
-          {/* Recommendation Section */}
+        {/* Right Section - Recommendations */}
+        <div className="w-full lg:w-[40%] space-y-4">
           {recommendation && (
-            <div className="bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Your Treatment is : {recommendation.kit}
-              </h2>
-              <div className="space-y-4">
-                {recommendation.warning && (
-                  <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-yellow-700 font-medium">
-                      <span className="mr-2">⚠️</span>
+            <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+              <div className="border-b pb-4 mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+                  Recommended Treatment
+                </h2>
+                <p className="text-green-600 font-medium mt-2">{recommendation.kit}</p>
+              </div>
+
+              {/* Warning Section with improved styling */}
+              {recommendation.warning && (
+                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start">
+                    <span className="text-yellow-500 text-xl mr-3">⚠️</span>
+                    <p className="text-yellow-700 text-sm sm:text-base">
                       {recommendation.warning}
                     </p>
                   </div>
-                )}
+                </div>
+              )}
+
+              {/* Products Section */}
+              <div className="space-y-4">
                 {recommendation.products?.map((product, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-all"
+                    className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg hover:shadow-md transition-all"
                   >
-                    <div className="flex items-center space-x-4">
-                      {productImages[product] && (
-                        <div className="w-20 h-20 flex-shrink-0">
-                          <img
-                            src={productImages[product]}
-                            alt={product}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-lg">{product}</h3>
-                        <div className="text-sm text-orange-500 font-medium mt-1">
-                          {product === "Sinibis" && "Dandruff"}
-                          {product === "Minoxidil 5%" && "Genetics"}
-                          {product === "Biotin Gummies" && "Nutrition"}
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {product === "Sinibis" &&
-                            "Clinically proven molecule for dandruff"}
-                          {product === "Minoxidil 5%" &&
-                            "Prevents DHT led hair damage"}
-                          {product === "Biotin Gummies" &&
-                            "Delicious gummies packed with hair growth nutrients"}
-                        </p>
+                    {productImages[product] && (
+                      <div className="w-full sm:w-24 h-24 flex-shrink-0">
+                        <img
+                          src={productImages[product]}
+                          alt={product}
+                          className="w-full h-full object-contain rounded-lg"
+                        />
                       </div>
+                    )}
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-gray-800">{product}</h3>
+                      <div className="text-sm text-orange-500 font-medium mt-1">
+                        {product === "Sinibis" && "Dandruff"}
+                        {product === "Minoxidil 5%" && "Genetics"}
+                        {product === "Biotin Gummies" && "Nutrition"}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {product === "Sinibis" &&
+                          "Clinically proven molecule for dandruff"}
+                        {product === "Minoxidil 5%" &&
+                          "Prevents DHT led hair damage"}
+                        {product === "Biotin Gummies" &&
+                          "Delicious gummies packed with hair growth nutrients"}
+                      </p>
                     </div>
                   </div>
                 ))}
-                
-                
-                {recommendedKits.filter((kit)=> kit.name===recommendation.kit).map((kit)=>(
-                  <div key={kit.name} className="kit-card">
-                    <a href={kit.url} target="_blank" rel="noopener noreferrer">
-                      <button className=" bg-green-600 py-2 rounded-sm w-full text-white ">Buy Now</button>
-                    </a>
-                  </div>
-                ))}
-
-                <p className="text-center text-sm text-gray-500 mt-2">
-                  All of our products are GMP & ISO 9001 certified
-                </p>
               </div>
 
+              {/* Buy Now Section */}
+              <div className="mt-6 pt-4 border-t">
+                {recommendedKits
+                  .filter((kit) => kit.name === recommendation.kit)
+                  .map((kit) => (
+                    <div key={kit.name} className="space-y-3">
+                      <a
+                        href={kit.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <button className="bg-green-600 py-3 px-6 rounded-lg w-full text-white font-medium hover:bg-green-700 transition-colors">
+                          Buy Now
+                        </button>
+                      </a>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Expert Advice Section with improved styling */}
               {recommendation.advice && (
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <p className="text-lg font-medium text-green-600 mb-4 text-center">
+                <div className="mt-6 pt-6 border-t">
+                  <p className="text-lg font-medium text-green-600 mb-4">
                     Expert Advice
                   </p>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {recommendation.advice.map((tip, index) => (
                       <li key={index} className="flex items-start">
-                        <span className="inline-block w-6 h-6 bg-green-100 rounded-full flex-shrink-0 flex items-center justify-center mr-3 mt-1">
-                          <span className="text-green-600 text-sm">
+                        <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                          <span className="text-green-600 text-sm font-medium">
                             {index + 1}
                           </span>
                         </span>
-                        <p className="text-gray-800 flex-grow">{tip}</p>
+                        <p className="text-gray-700 text-sm flex-grow">{tip}</p>
                       </li>
                     ))}
                   </ul>
@@ -417,9 +444,10 @@ const RecommendationPage = () => {
             </div>
           )}
 
+          {/* Back Button with improved styling */}
           <button
             onClick={() => navigate("/")}
-            className="w-full py-3 mt-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+            className="w-full py-3 px-6 bg-gray-800 text-white rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors font-medium"
           >
             Back to Assessment
           </button>
