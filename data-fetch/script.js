@@ -20,7 +20,7 @@ async function fetchUsers() {
     }
 
     try {
-        const MAIN_API = "https://nonucure-bot.vercel.app/api";
+        const MAIN_API = "http://localhost:5000/api";
 
         const response = await fetch(`${MAIN_API}/users`, {
             method: "POST",
@@ -46,6 +46,7 @@ async function fetchUsers() {
     }
 }
 
+// Update the populateTable function
 function populateTable(data, genderFilter) {
     const usersBody = document.getElementById("usersBody");
     const maleColumns = document.querySelectorAll('.male-column');
@@ -105,39 +106,53 @@ function populateTable(data, genderFilter) {
     users.forEach(user => {
         const row = document.createElement("tr");
         let rowHtml = `
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>${user.phone}</td>
-            <td>${user.gender}</td>`;
-          
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.email || 'N/A'}</td>
+            <td>${user.phone || 'N/A'}</td>
+            <td>${user.age || 'N/A'}</td>
+            <td>${user.gender || 'N/A'}</td>
+            <td>${user.healthConcern || 'N/A'}</td>`;
 
         // Add male-specific columns
         if (user.gender === 'Male') {
             rowHtml += `
-                <td>${user.healthConcern}</td>
                 <td class="male-column">${user.hairStage || 'N/A'}</td>
                 <td class="male-column">${user.dandruff || 'N/A'}</td>
                 <td class="male-column">${user.dandruffStage || 'N/A'}</td>
                 <td class="male-column">${user.thinningOrBaldSpots || 'N/A'}</td>
-                <td class="male-column">${user.energyLevels || 'N/A'}</td>`;
+                <td class="male-column">${user.energyLevels || 'N/A'}</td>
+                <td class="male-column">${user.severeIllness || 'N/A'}</td>
+                <td class="male-column">${user.hairLossGenetic || 'N/A'}</td>
+                <td class="male-column">${user.stressLevel || 'N/A'}</td>
+                <td class="male-column">${user.sleepQuality || 'N/A'}</td>
+                <td class="male-column">${user.planningForBaby || 'N/A'}</td>`;
         } else {
             rowHtml += `
-                <td class="female-column">${user.mainConcern || 'N/A'}</td>
+                <td class="female-column">${user.hairStage || 'N/A'}</td>
+                <td class="female-column">${user.dandruff || 'N/A'}</td>
+                <td class="female-column">${user.dandruffStage || 'N/A'}</td>
+                <td class="female-column">${user.pregnancyStatus || 'N/A'}</td>
                 <td class="female-column">${user.naturalHair || 'N/A'}</td>
                 <td class="female-column">${user.goal || 'N/A'}</td>
-                <td class="female-column">${user.hairFall || 'N/A'}</td>`;
-                
+                <td class="female-column">${user.hairFall || 'N/A'}</td>
+                <td class="female-column">${user.genetic || 'N/A'}</td>
+                <td class="female-column">${user.stressLevel || 'N/A'}</td>`;
         }
-            
+
+        // Add common final columns
         const userRecommendation = recommendationsMap[user._id] || { kit: 'No Kit Assigned', products: 'No Products Assigned' };
-        rowHtml += `<td>${userRecommendation.kit}</td>
-                   <td>${userRecommendation.products}</td>`;
+        rowHtml += `
+            <td>${user.medicalConditions?.join(', ') || 'N/A'}</td>
+            <td>${userRecommendation.kit}</td>
+            <td>${userRecommendation.products}</td>
+            <td>${new Date(user.createdAt).toLocaleString()}</td>`;
+
         row.innerHTML = rowHtml;
         usersBody.appendChild(row);
     });
-    
 }
 
+// Update the downloadList function
 function downloadList() {
     if (!fetchedData || (!fetchedData.maleUsers?.length && !fetchedData.femaleUsers?.length)) {
         alert('No data available to download. Please fetch data first.');
@@ -151,6 +166,7 @@ function downloadList() {
             Name: user.name || 'N/A',
             Email: user.email || 'N/A',
             Phone: user.phone || 'N/A',
+            Age: user.age || 'N/A',
             Gender: user.gender || 'N/A',
             'Health Concern': user.healthConcern || 'N/A',
             'Hair Stage': user.hairStage || 'N/A',
@@ -158,8 +174,15 @@ function downloadList() {
             'Dandruff Stage': user.dandruffStage || 'N/A',
             'Thinning/Bald Spots': user.thinningOrBaldSpots || 'N/A',
             'Energy Levels': user.energyLevels || 'N/A',
-            Kit: recommendation.kit || 'No Kit Assigned',
-            Products: recommendation.products?.length ? recommendation.products.join(', ') : 'No Products Assigned'
+            'Severe Illness': user.severeIllness || 'N/A',
+            'Hair Loss Genetic': user.hairLossGenetic || 'N/A',
+            'Stress Level': user.stressLevel || 'N/A',
+            'Sleep Quality': user.sleepQuality || 'N/A',
+            'Planning for Baby': user.planningForBaby || 'N/A',
+            'Medical Conditions': user.medicalConditions?.join(', ') || 'N/A',
+            'Recommended Kit': recommendation.kit || 'No Kit Assigned',
+            'Products': recommendation.products?.length ? recommendation.products.join(', ') : 'No Products Assigned',
+            'Created At': new Date(user.createdAt).toLocaleString()
         };
     });
 
@@ -170,13 +193,22 @@ function downloadList() {
             Name: user.name || 'N/A',
             Email: user.email || 'N/A',
             Phone: user.phone || 'N/A',
+            Age: user.age || 'N/A',
             Gender: user.gender || 'N/A',
-            'Main Concern': user.mainConcern || 'N/A',
+            'Health Concern': user.healthConcern || 'N/A',
+            'Hair Stage': user.hairStage || 'N/A',
+            Dandruff: user.dandruff || 'N/A',
+            'Dandruff Stage': user.dandruffStage || 'N/A',
+            'Pregnancy Status': user.pregnancyStatus || 'N/A',
             'Natural Hair': user.naturalHair || 'N/A',
             Goal: user.goal || 'N/A',
             'Hair Fall': user.hairFall || 'N/A',
-            Kit: recommendation.kit || 'No Kit Assigned',
-            Products: recommendation.products?.length ? recommendation.products.join(', ') : 'No Products Assigned'
+            'Genetic': user.genetic || 'N/A',
+            'Stress Level': user.stressLevel || 'N/A',
+            'Medical Conditions': user.medicalConditions?.join(', ') || 'N/A',
+            'Recommended Kit': recommendation.kit || 'No Kit Assigned',
+            'Products': recommendation.products?.length ? recommendation.products.join(', ') : 'No Products Assigned',
+            'Created At': new Date(user.createdAt).toLocaleString()
         };
     });
 
@@ -192,3 +224,20 @@ function downloadList() {
     // Write the workbook to a file
     XLSX.writeFile(wb, "UserRecommendations.xlsx");
 }
+
+document.getElementById('genderFilter').addEventListener('change', function(e) {
+    const maleColumns = document.querySelectorAll('.male-column');
+    const femaleColumns = document.querySelectorAll('.female-column');
+    
+    if (e.target.value === 'Male') {
+        maleColumns.forEach(col => col.classList.remove('hidden-column'));
+        femaleColumns.forEach(col => col.classList.add('hidden-column'));
+    } else if (e.target.value === 'Female') {
+        maleColumns.forEach(col => col.classList.add('hidden-column'));
+        femaleColumns.forEach(col => col.classList.remove('hidden-column'));
+    } else {
+        // Show all columns when no gender is selected
+        maleColumns.forEach(col => col.classList.remove('hidden-column'));
+        femaleColumns.forEach(col => col.classList.remove('hidden-column'));
+    }
+});

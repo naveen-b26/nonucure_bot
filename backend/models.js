@@ -46,7 +46,33 @@ const femaleUserSchema = new mongoose.Schema(
     medicalConditions: [{
       type: String,
       enum: ['High Blood Pressure (BP)', 'Diabetes (Sugar)', 'Thyroid Issues', 'None of the above']
-    }]
+    }],
+    hairStage: {
+      type: String,
+      enum: [
+        'Stage 1 (Early thinning)',
+        'Stage 2 (Widening of the part)',
+        'Stage 3 (Crown area thinning)',
+        'Stage 4 (Visible scalp)',
+        'Stage 5 (Advanced thinning)'
+      ]
+    },
+    dandruff: {
+      type: String,
+      enum: ['Yes', 'No']
+    },
+    dandruffStage: {
+      type: String,
+      enum: ['Mild', 'Moderate', 'Severe']
+    },
+    pregnancyStatus: {
+      type: String,
+      enum: [
+        'Recently had a baby (< 1 year)',
+        'Planning for pregnancy',
+        'None'
+      ]
+    }
   },
   { timestamps: true, collection: "female_users" }
 );

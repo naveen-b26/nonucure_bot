@@ -102,11 +102,23 @@
         }
 
         .male-column {
-            background-color: rgba(0, 123, 255, 0.03);
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .male-column:nth-child(even) {
+            background-color: rgba(0, 123, 255, 0.08);
         }
 
         .female-column {
-            background-color: rgba(255, 192, 203, 0.03);
+            background-color: rgba(255, 182, 193, 0.05);
+        }
+
+        .female-column:nth-child(even) {
+            background-color: rgba(255, 182, 193, 0.08);
+        }
+
+        .hidden-column {
+            display: none;
         }
 
         @media (max-width: 1200px) {
@@ -119,11 +131,17 @@
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
             }
 
             .controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 10px;
             }
 
             .date-time-group {
@@ -156,21 +174,42 @@
         <table id="usersTable">
             <thead>
                 <tr>
+                    <!-- Common columns -->
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
+                    <th>Age</th>
                     <th>Gender</th>
                     <th>Health Concern</th>
+                    
+                    <!-- Male specific columns -->
                     <th class="male-column">Hair Stage</th>
                     <th class="male-column">Dandruff</th>
                     <th class="male-column">Dandruff Stage</th>
                     <th class="male-column">Thinning/Bald Spots</th>
                     <th class="male-column">Energy Levels</th>
+                    <th class="male-column">Severe Illness</th>
+                    <th class="male-column">Hair Loss Genetic</th>
+                    <th class="male-column">Stress Level</th>
+                    <th class="male-column">Sleep Quality</th>
+                    <th class="male-column">Planning for Baby</th>
+                    
+                    <!-- Female specific columns -->
+                    <th class="female-column">Hair Stage</th>
+                    <th class="female-column">Dandruff</th>
+                    <th class="female-column">Dandruff Stage</th>
+                    <th class="female-column">Pregnancy Status</th>
                     <th class="female-column">Natural Hair</th>
                     <th class="female-column">Goal</th>
                     <th class="female-column">Hair Fall</th>
-                    <th>Recommendations</th>
+                    <th class="female-column">Genetic</th>
+                    <th class="female-column">Stress Level</th>
+                    
+                    <!-- Common final columns -->
+                    <th>Medical Conditions</th>
+                    <th>Recommended Kit</th>
                     <th>Products</th>
+                    <th>Created At</th>
                 </tr>
             </thead>
             <tbody id="usersBody">

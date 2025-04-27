@@ -158,7 +158,11 @@ router.post('/recommend', async (req, res) => {
           recommendation.kit = 'Complete Hair Growth Kit';
           recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
         } else if (healthConcern === 'Advanced widening') {
-          return res.status(400).json({ message: 'Consult a hair doctor for advanced widening.' });
+          recommendation.needsDoctor = true;
+          recommendation.message = 'Consult a hair doctor for advanced widening.';
+          recommendation.kit = 'Doctor Consultation Required';
+          recommendation.products = [];
+          recommendation.description = 'Your condition requires professional medical attention.';
         } else {
           return res.status(400).json({ message: 'Invalid health concern specified for female' });
         }

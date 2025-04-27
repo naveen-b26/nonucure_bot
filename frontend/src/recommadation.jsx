@@ -119,7 +119,7 @@ const RecommendationPage = () => {
         return;
       }
 
-      const response = await axios.post(`https://nonucure-bot.vercel.app/api/recommend`, {
+      const response = await axios.post(`http://localhost:5000/api/recommend`, {
         userId: userId,
         gender: formData.gender,
         healthConcern: responses.healthConcern,
@@ -348,98 +348,112 @@ const RecommendationPage = () => {
             <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6">
               <div className="border-b pb-4 mb-6">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                  Recommended Treatment
+                  {recommendation.needsDoctor ? 'Medical Attention Required' : 'Recommended Treatment'}
                 </h2>
-                <p className="text-green-600 font-medium mt-2">{recommendation.kit}</p>
               </div>
 
-              {/* Warning Section with improved styling */}
-              {recommendation.warning && (
-                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <div className="flex items-start">
-                    <span className="text-yellow-500 text-xl mr-3">⚠️</span>
-                    <p className="text-yellow-700 text-sm sm:text-base">
-                      {recommendation.warning}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Products Section */}
-              <div className="space-y-4">
-                {recommendation.products?.map((product, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg hover:shadow-md transition-all"
-                  >
-                    {productImages[product] && (
-                      <div className="w-full sm:w-24 h-24 flex-shrink-0">
-                        <img
-                          src={productImages[product]}
-                          alt={product}
-                          className="w-full h-full object-contain rounded-lg"
-                        />
-                      </div>
-                    )}
-                    <div className="flex-grow">
-                      <h3 className="font-semibold text-gray-800">{product}</h3>
-                      <div className="text-sm text-orange-500 font-medium mt-1">
-                        {product === "Sinibis" && "Dandruff"}
-                        {product === "Minoxidil 5%" && "Genetics"}
-                        {product === "Biotin Gummies" && "Nutrition"}
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {product === "Sinibis" &&
-                          "Clinically proven molecule for dandruff"}
-                        {product === "Minoxidil 5%" &&
-                          "Prevents DHT led hair damage"}
-                        {product === "Biotin Gummies" &&
-                          "Delicious gummies packed with hair growth nutrients"}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Buy Now Section */}
-              <div className="mt-6 pt-4 border-t">
-                {recommendedKits
-                  .filter((kit) => kit.name === recommendation.kit)
-                  .map((kit) => (
-                    <div key={kit.name} className="space-y-3">
-                      <a
-                        href={kit.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <button className="bg-green-600 py-3 px-6 rounded-lg w-full text-white font-medium hover:bg-green-700 transition-colors">
-                          Buy Now
-                        </button>
-                      </a>
-                    </div>
-                  ))}
-              </div>
-
-              {/* Expert Advice Section with improved styling */}
-              {recommendation.advice && (
-                <div className="mt-6 pt-6 border-t">
-                  <p className="text-lg font-medium text-green-600 mb-4">
-                    Expert Advice
+              {recommendation.needsDoctor ? (
+                // Simple message display for doctor consultation
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <p className="text-red-700 text-base">
+                    {recommendation.message}
                   </p>
-                  <ul className="space-y-4">
-                    {recommendation.advice.map((tip, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-green-600 text-sm font-medium">
-                            {index + 1}
-                          </span>
-                        </span>
-                        <p className="text-gray-700 text-sm flex-grow">{tip}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-red-600 mt-4 font-medium">
+                    Please consult with a qualified dermatologist for proper medical attention.
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <p className="text-green-600 font-medium mt-2">{recommendation.kit}</p>
+                  {/* ...existing products section... */}
+                  {recommendation.warning && (
+                    <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-start">
+                        <span className="text-yellow-500 text-xl mr-3">⚠️</span>
+                        <p className="text-yellow-700 text-sm sm:text-base">
+                          {recommendation.warning}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {/* ...rest of your existing recommendation display... */}
+                  <div className="space-y-4">
+                    {recommendation.products?.map((product, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg hover:shadow-md transition-all"
+                      >
+                        {productImages[product] && (
+                          <div className="w-full sm:w-24 h-24 flex-shrink-0">
+                            <img
+                              src={productImages[product]}
+                              alt={product}
+                              className="w-full h-full object-contain rounded-lg"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-grow">
+                          <h3 className="font-semibold text-gray-800">{product}</h3>
+                          <div className="text-sm text-orange-500 font-medium mt-1">
+                            {product === "Sinibis" && "Dandruff"}
+                            {product === "Minoxidil 5%" && "Genetics"}
+                            {product === "Biotin Gummies" && "Nutrition"}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {product === "Sinibis" &&
+                              "Clinically proven molecule for dandruff"}
+                            {product === "Minoxidil 5%" &&
+                              "Prevents DHT led hair damage"}
+                            {product === "Biotin Gummies" &&
+                              "Delicious gummies packed with hair growth nutrients"}
+                            {product==="gummies" && "Essential vitamins & minerals for hair growth"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Buy Now Section */}
+                  <div className="mt-6 pt-4 border-t">
+                    {recommendedKits
+                      .filter((kit) => kit.name === recommendation.kit)
+                      .map((kit) => (
+                        <div key={kit.name} className="space-y-3">
+                          <a
+                            href={kit.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <button className="bg-green-600 py-3 px-6 rounded-lg w-full text-white font-medium hover:bg-green-700 transition-colors">
+                              Buy Now
+                            </button>
+                          </a>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Expert Advice Section with improved styling */}
+                  {recommendation.advice && (
+                    <div className="mt-6 pt-6 border-t">
+                      <p className="text-lg font-medium text-green-600 mb-4">
+                        Expert Advice
+                      </p>
+                      <ul className="space-y-4">
+                        {recommendation.advice.map((tip, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                              <span className="text-green-600 text-sm font-medium">
+                                {index + 1}
+                              </span>
+                            </span>
+                            <p className="text-gray-700 text-sm flex-grow">{tip}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

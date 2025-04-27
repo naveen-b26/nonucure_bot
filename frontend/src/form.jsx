@@ -31,6 +31,12 @@ import mW from "./pics/MWidening.png";
 import aW from "./pics/AWidening.png";
 import cP from "./pics/Cpatches.png";
 import logo from "./pics/nonu_care_logo.jpeg";
+import fs1 from "./pics/female-hair-1.jpg";
+import fs2 from "./pics/female-hair-2.jpg";
+import fs3 from "./pics/female-hair-3.jpg";
+import fs4 from "./pics/female-hair-1.jpg";
+import fs5 from "./pics/female-hair-5.jpg";
+
 function Form() {
   const { setUserId, formData, setFormData, responses, setResponses } =
     useStore();
@@ -102,6 +108,7 @@ function Form() {
     setStep(1);
   };
   const getNextQuestion = (name, value) => {
+    // Steps 1-5: Basic Information
     if (step <= 5) {
       switch (name) {
         case "name":
@@ -137,190 +144,343 @@ function Form() {
             ],
           };
         case "gender":
-          if (value === "Male") {
-            return {
-              content: "What's your primary health concern?",
-              input: true,
-              name: "healthConcern",
-              options: [
-                { label: "Hair Loss", image: hairLoss },
-                { label: "Beard Growth", image: bg },
-              ],
-            };
-          } else {
-            return {
-              content: "What's your primary health concern?",
-              input: true,
-              name: "healthConcern",
-              options: [
-                { label: "Hair thinning", image: ht },
-                { label: "Coin size patches", image: cP },
-                { label: "Medium widening", image: mW },
-                { label: "Advanced widening", image: aW },
-                { label: "Less volume on sides", image: lV },
-              ],
-            };
-          }
+          return {
+            content: "What's your primary health concern?",
+            input: true,
+            name: "healthConcern",
+            options:
+              value === "Male"
+                ? [
+                    { label: "Hair Loss", image: hairLoss },
+                    { label: "Beard Growth", image: bg },
+                  ]
+                : [
+                    { label: "Hair thinning", image: ht },
+                    { label: "Coin size patches", image: cP },
+                    { label: "Medium widening", image: mW },
+                    { label: "Advanced widening", image: aW },
+                    { label: "Less volume on sides", image: lV },
+                  ],
+          };
         default:
           return null;
       }
-    } else if (name === "healthConcern") {
-      if (value === "Hair Loss") {
-        if (formData.gender === "Male") {
+    }
+
+    // Steps 6-18: Gender-specific flow
+    if (formData.gender === "Male") {
+      switch (name) {
+        case "healthConcern":
+          if (value === "Hair Loss") {
+            return {
+              content: "Please select your hair stage:",
+              input: true,
+              name: "hairStage",
+              options: [
+                { label: "Stage 1 (Slightly hair loss)", image: s1 },
+                { label: "Stage 2 (Hair line receding)", image: s2 },
+                { label: "Stage 3 (Developing bald spot)", image: s3 },
+                { label: "Stage 4 (Visible bald spot)", image: s4 },
+                { label: "Stage 5 (Balding from crown area)", image: s5 },
+                { label: "Stage 6 (Advanced balding)", image: s6 },
+                { label: "Heavy Hair Fall", image: s7 },
+              ],
+            };
+          } 
+
+        case "hairStage":
+          return {
+            content: "Do you have dandruff?",
+            input: true,
+            name: "dandruff",
+            options: [
+              { label: "Yes", image: dy },
+              { label: "No", image: dn },
+            ],
+          };
+
+        case "dandruff":
+          return value === "Yes"
+            ? {
+                content: "Select your dandruff stage:",
+                input: true,
+                name: "dandruffStage",
+                options: [
+                  { label: "Low" },
+                  { label: "Mild" },
+                  { label: "Moderate" },
+                  { label: "Severe" },
+                ],
+              }
+            : {
+                content:
+                  "Are you experiencing hair thinning or bald spots?",
+                input: true,
+                name: "thinningOrBaldSpots",
+                options: [
+                  { label: "thinning only", image: thin },
+                  { label: "bald spots only", image: bs },
+                  { label: "Yes, both" },
+                  { label: "No" },
+                  { label: "I'm not sure" },
+                ],
+              };
+
+        // Continue male flow
+        case "dandruffStage":
+          return {
+            content: "Are you experiencing hair thinning or bald spots?",
+            input: true,
+            name: "thinningOrBaldSpots",
+            options: [
+              { label: "thinning only", image: thin },
+              { label: "bald spots only", image: bs },
+              { label: "Yes, both" },
+              { label: "No" },
+              { label: "I'm not sure" },
+            ],
+          };
+        case "thinningOrBaldSpots":
+          return {
+            content: "What do you describe about energy levels:",
+            input: true,
+            name: "energyLevels",
+            options: [
+              { label: "Low" },
+              { label: "Moderate" },
+              { label: "High" },
+            ],
+          };
+        case "energyLevels":  
+          
+            return {
+              content: "Do you feel more hair fall than usual?",
+              input: true,
+              name: "hairFall",
+              options: [
+                { label: "Yes, extreme" },
+                { label: "Mild" },
+                { label: "No" },
+              ],
+            };
+        case "hairFall":
+          return {
+            content: "Have you experienced any of these in the last year?",
+            input: true,
+            name: "severeIllness",
+            options: [
+              { label: "Severe illness (e.g., dengue, malaria, typhoid)" },
+              { label: "Malaria" },
+              { label: "Heavy weight (fall/gain)" },
+              { label: "No" },
+            ],
+          };
+        case "severeIllness":
+          return {
+            content: "Is hair loss genetic in your family?",
+            input: true,
+            name: "hairLossGenetic",
+            options: [{ label: "Yes" }, { label: "No" }],
+          };
+        case "hairLossGenetic":
+          return {
+            content: "Do you feel stressed?",
+            input: true,
+            name: "stressLevel",
+            options: [
+              { label: "Yes" },
+              { label: "No" },
+              { label: "Moderate" },
+              { label: "High" },
+            ],
+          };
+        case "stressLevel":
+          return {
+            content: "How well do you sleep?",
+            input: true,
+            name: "sleepQuality",
+            options: [
+              { label: "6 to 8 hours of uninterrupted sleep" },
+              { label: "Disturbed sleep" },
+              { label: "Difficulty falling or staying asleep" },
+            ],
+          };
+        case "sleepQuality":
+          return {
+            content: "Are you planning for a baby?",
+            input: true,
+            name: "planningForBaby",
+            options: [{ label: "Yes" }, { label: "No" }],
+          };
+        case "planningForBaby":
+          return {
+            content: "Do you have any medical conditions?",
+            input: true,
+            multiple: true,
+            name: "medicalConditions",
+            options: [
+              { label: "High Blood Pressure (BP)" },
+              { label: "Diabetes (Sugar)" },
+              { label: "Thyroid Issues" },
+              { label: "None of the above" },
+            ],
+          };
+      }
+    } else {
+      // Female flow
+      switch (name) {
+        case "healthConcern":
           return {
             content: "Please select your hair stage:",
             input: true,
             name: "hairStage",
             options: [
-              { label: "Stage 1 (Slightly hair loss)", image: s1 },
-              { label: "Stage 2 (Hair line receding)", image: s2 },
-              { label: "Stage 3 (Developing bald spot)", image: s3 },
-              { label: "Stage 4 (Visible bald spot)", image: s4 },
-              { label: "Stage 5 (Balding from crown area)", image: s5 },
-              { label: "Stage 6 (Advanced balding)", image: s6 },
-              { label: "Heavy Hair Fall", image: s7 },
+              { label: "Stage 1 (Early thinning)", image: fs1 },
+              { label: "Stage 2 (Widening of the part)", image: fs2 },
+              { label: "Stage 3 (Crown area thinning)", image: fs3 },
+              { label: "Stage 4 (Visible scalp)", image: fs4 },
+              { label: "Stage 5 (Advanced thinning)", image: fs5 },
             ],
           };
-        }
-      } else {
-        return {
-          content: "What does your hair look like naturally?",
-          input: true,
-          name: "naturalHair",
-          options: [
-            { label: "Straight", image: stH },
-            { label: "Curly", image: cH },
-            { label: "Wavy", image: wH },
-            { label: "Coily", image: coH },
-          ],
-        };
+        case "hairStage":
+          return {
+            content: "Do you have dandruff?",
+            input: true,
+            name: "dandruff",
+            options: [
+              { label: "Yes", image: dy },
+              { label: "No", image: dn },
+            ],
+          };
+        case "dandruff":
+          if (value === "Yes") {
+            return {
+              content: "What is your dandruff severity level?",
+              input: true,
+              name: "dandruffStage",
+              options: [
+                { label: "Mild" },
+                { label: "Moderate" },
+                { label: "Severe" },
+              ],
+            };
+          }
+          return {
+            content: "What is your pregnancy status?",
+            input: true,
+            name: "pregnancyStatus",
+            options: [
+              { label: "Recently had a baby (< 1 year)" },
+              { label: "Planning for pregnancy" },
+              { label: "None" },
+            ],
+          };
+        case "dandruffStage":
+          return {
+            content: "What is your pregnancy status?",
+            input: true,
+            name: "pregnancyStatus",
+            options: [
+              { label: "Recently had a baby (< 1 year)" },
+              { label: "Planning for pregnancy" },
+              { label: "None" },
+            ],
+          };
+        case "pregnancyStatus":
+          return {
+            content: "What does your hair look like naturally?",
+            input: true,
+            name: "naturalHair",
+            options: [
+              { label: "Straight", image: stH },
+              { label: "Curly", image: cH },
+              { label: "Wavy", image: wH },
+              { label: "Coily", image: coH },
+            ],
+          };
+        case "naturalHair":
+          return {
+            content: "What is your current goal?",
+            input: true,
+            name: "goal",
+            options: [
+              { label: "Control hair fall" },
+              { label: "Regrow Hair" },
+            ],
+          };
+        case "goal":
+          return {
+            content: "Do you feel more hair fall than usual?",
+            input: true,
+            name: "hairFall",
+            options: [
+              { label: "Yes, extreme" },
+              { label: "Mild" },
+              { label: "No" },
+            ],
+          };
+        case "hairFall":
+          return {
+            content: "Have you experienced any of these in the last year?",
+            input: true,
+            name: "severeIllness",
+            options: [
+              { label: "Severe illness (e.g., dengue, malaria, typhoid)" },
+              { label: "Malaria" },
+              { label: "Heavy weight (fall/gain)" },
+              { label: "No" },
+            ],
+          };
+        case "severeIllness":
+          return {
+            content: "Have you had any genetic issues?",
+            input: true,
+            name: "genetic",
+            options: [{ label: "Yes" }, { label: "No" }],
+          };
+        case "genetic":
+          return {
+            content: "How are your stress levels?",
+            input: true,
+            name: "stressLevel",
+            options: [
+              { label: "Yes" },
+              { label: "No" },
+              { label: "Moderate" },
+              { label: "High" },
+            ],
+          };
+          case "stressLevel":
+          return {
+            content: "How well do you sleep?",
+            input: true,
+            name: "sleepQuality",
+            options: [
+              { label: "6 to 8 hours of uninterrupted sleep" },
+              { label: "Disturbed sleep" },
+              { label: "Difficulty falling or staying asleep" },
+            ],
+          };
+        case "sleepQuality":
+          return {
+            content: "Do you have any medical conditions?",
+            input: true,
+            multiple: true,
+            name: "medicalConditions",
+            options: [
+              { label: "High Blood Pressure (BP)" },
+              { label: "Diabetes (Sugar)" },
+              { label: "Thyroid Issues" },
+              { label: "None of the above" },
+            ],
+          };
       }
-    } else if (name === "hairStage") {
-      return {
-        content: "Do you have dandruff?",
-        input: true,
-        name: "dandruff",
-        options: [
-          { label: "Yes", image: dy },
-          { label: "No", image: dn },
-        ],
-      };
-    } else if (name === "dandruff" && value === "Yes") {
-      return {
-        content: "Select your dandruff stage:",
-        input: true,
-        name: "dandruffStage",
-        options: [
-          { label: "Low" },
-          { label: "Mild" },
-          { label: "Moderate" },
-          { label: "Severe" },
-        ],
-      };
-    } else if (name === "dandruff" || name === "dandruffStage") {
-      return {
-        content: "Are you experiencing hair thinning or bald spots?",
-        input: true,
-        name: "thinningOrBaldSpots",
-        options: [
-          { label: "thinning only", image: thin },
-          { label: "bald spots only", image: bs },
-          { label: "Yes, both" },
-          { label: "No" },
-          { label: "I'm not sure" },
-        ],
-      };
-    } else if (name === "thinningOrBaldSpots") {
-      return {
-        content: "What do you describe about energy levels:",
-        input: true,
-        name: "energyLevels",
-        options: [{ label: "Low" }, { label: "Moderate" }, { label: "High" }],
-      };
-    } else if (name === "naturalHair") {
-      return {
-        content: "What is your current goal?",
-        input: true,
-        name: "goal",
-        options: [{ label: "Control hair fall" }, { label: "Regrow Hair" }],
-      };
-    } else if (name === "goal") {
-      return {
-        content: "Do you feel more hair fall than usual?",
-        input: true,
-        name: "hairFall",
-        options: [
-          { label: "Yes, extreme" },
-          { label: "Mild" },
-          { label: "No" },
-        ],
-      };
-    } else if (name === "hairFall" || name === "energyLevels") {
-      return {
-        content: "Have you experienced any of these in the last year?",
-        input: true,
-        name: "severeIllness",
-        options: [
-          { label: "Severe illness (e.g., dengue, malaria, typhoid)" },
-          { label: "Malaria" },
-          { label: "Heavy weight (fall/gain)" },
-          { label: "No" },
-        ],
-      };
-    } else if (name === "severeIllness") {
-      return {
-        content: "Is hair loss genetic in your family?",
-        input: true,
-        name: "hairLossGenetic",
-        options: [{ label: "Yes" }, { label: "No" }],
-      };
-    } else if (name === "hairLossGenetic") {
-      return {
-        content: "Do you feel stressed?",
-        input: true,
-        name: "stressLevel",
-        options: [
-          { label: "Yes" },
-          { label: "No" },
-          { label: "Moderate" },
-          { label: "High" },
-        ],
-      };
-    } else if (name === "stressLevel") {
-      return {
-        content: "How well do you sleep?",
-        input: true,
-        name: "sleepQuality",
-        options: [
-          { label: "6 to 8 hours of uninterrupted sleep" },
-          { label: "Disturbed sleep" },
-          { label: "Difficulty falling or staying asleep" },
-        ],
-      };
-    } else if (name === "sleepQuality" && formData.gender === "Male") {
-      return {
-        content: "Are you planning for a baby?",
-        input: true,
-        name: "planningForBaby",
-        options: [{ label: "Yes" }, { label: "No" }],
-      };
-    }else if (name === "planningForBaby") {
-      return {
-        content: "Do you have any medical conditions?",
-        input: true,
-        multiple: true,
-        name: "medicalConditions",
-        options: [
-          { label: "High Blood Pressure (BP)" },
-          { label: "Diabetes (Sugar)" },
-          { label: "Thyroid Issues" },
-          { label: "None of the above" },
-        ],
-      };
     }
 
-    return null;
+    return null; // Triggers form submission
   };
+
+
 
   const handleInputSubmit = async (name, value) => {
     // Validation checks
@@ -438,11 +598,8 @@ function Form() {
     setFormData(updatedFormData);
     setResponses(updatedResponses);
 
-
     // If health concern is "Beard Growth", submit immediately
-    if (
-      name === "healthConcern" && value === "Beard Growth"
-    ) {
+    if (name === "healthConcern" && value === "Beard Growth") {
       handleSubmit(updatedFormData, updatedResponses);
       return;
     }
@@ -502,11 +659,14 @@ function Form() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-6 sm:px-0">
-      <div className="flex justify-between items-center bg-black w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl text-white font-bold text-center text-xl sm:text-2xl font-mono p-3 rounded-t-lg">
-        <a href="https://nonucare.com/?srsltid=AfmBOoqAfH4E3IkzoKgwxCjZDobgjDnnjmPSYlma7IchORUt_qsLye_n" target="_blank" >
+      <div className="flex items-center bg-black w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl text-white font-bold text-center text-xl sm:text-2xl font-mono p-3 rounded-t-lg">
+        <a
+          href="https://nonucare.com/?srsltid=AfmBOoqAfH4E3IkzoKgwxCjZDobgjDnnjmPSYlma7IchORUt_qsLye_n"
+          target="_blank"
+        >
           <img src={logo} alt="" width={70} />
         </a>
-        <span className="relative -left-56">Self Assessment</span>
+        <span className=" w-full text-center">Self Assessment</span>
       </div>
 
       <div className="bg-white shadow-lg rounded-b-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl">
@@ -517,9 +677,8 @@ function Form() {
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex ${
-                  message.type === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${message.type === "user" ? "justify-end" : "justify-start"
+                  }`}
               >
                 {message.type === "bot" && (
                   <img
@@ -529,18 +688,17 @@ function Form() {
                   />
                 )}
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 sm:p-4 ${
-                    message.type === "user"
+                  className={`max-w-[80%] rounded-lg p-3 sm:p-4 ${message.type === "user"
                       ? "bg-green-500 text-white"
                       : "bg-gray-200"
-                  }`}
+                    }`}
                 >
                   <p className="text-sm sm:text-base">{message.content}</p>
 
                   {message.showStartButton && (
                     <button
                       onClick={handleStartClick}
-                      className="mt-3 sm:mt-4 bg-black text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-600 text-sm sm:text-base transition-colors"
+                      className="w-full sm:w-auto h-12 sm:h-[52px] mt-3 sm:mt-4 bg-black text-white px-8 rounded-lg hover:bg-gray-800 text-base font-medium transition-colors flex items-center justify-center"
                     >
                       Sure, let's start!
                     </button>
@@ -552,7 +710,7 @@ function Form() {
                         <button
                           key={idx}
                           onClick={action.onClick}
-                          className="bg-black text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-600 text-sm sm:text-base transition-colors"
+                          className="flex-1 sm:flex-none bg-black text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg hover:bg-gray-800 text-sm sm:text-base transition-colors font-medium min-w-[120px] sm:min-w-[140px]"
                         >
                           {action.label}
                         </button>
@@ -564,15 +722,14 @@ function Form() {
                     message === messages[messages.length - 1] && (
                       <div className="mt-3 sm:mt-4">
                         {message.options ? (
-                          <div className="space-y-2">
+                          <div className="">
                             <div
-                              className={`grid ${
-                                message.options.some((opt) => opt.image)
+                              className={`grid ${message.options.some((opt) => opt.image)
                                   ? message.options.length > 4
                                     ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                                     : "grid-cols-1 sm:grid-cols-2"
                                   : "grid-cols-1"
-                              } gap-2 sm:gap-3`}
+                                } gap-2 sm:gap-3`}
                             >
                               {message.options.map((option) => (
                                 <button
@@ -583,20 +740,32 @@ function Form() {
                                       option.label
                                     )
                                   }
-                                  className={`flex ${
-                                    option.image ? "flex-col" : "flex-row"
-                                  } items-center p-2 sm:p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors text-gray-800 border text-sm sm:text-base`}
+                                  className={`
+                                    w-full 
+                                    ${option.image ? 'min-h-[120px] sm:min-h-[160px]' : 'h-12 sm:h-[52px]'}
+                                    flex flex-col items-center justify-center
+                                    px-3 py-4 sm:p-4
+                                    bg-white rounded-lg
+                                    hover:bg-gray-50 transition-colors
+                                    text-gray-800 border border-gray-300
+                                    hover:border-gray-400
+                                    gap-2 sm:gap-3
+                                  `}
                                 >
                                   {option.image && (
-                                    <div className="w-full flex justify-center">
+                                    <div className="w-full flex-1 flex items-center justify-center">
                                       <img
                                         src={option.image || "/placeholder.svg"}
                                         alt={option.label}
-                                        className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover mb-2"
+                                        className={`
+                                          ${option.label.includes("Stage") ? 'w-24 h-24 sm:w-32 sm:h-32' : 'w-16 h-16 sm:w-24 sm:h-24'}
+                                          object-contain
+                                          rounded-lg
+                                        `}
                                       />
                                     </div>
                                   )}
-                                  <span className="font-semibold text-center">
+                                  <span className="font-medium text-sm sm:text-base text-center px-2">
                                     {option.label}
                                   </span>
                                 </button>
@@ -604,10 +773,10 @@ function Form() {
                             </div>
                           </div>
                         ) : (
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2 w-full">
                             <input
                               type={message.type || "text"}
-                              className="flex-1 p-2 sm:p-3 rounded-lg border text-sm sm:text-base"
+                              className="flex-1 p-3 sm:p-4 rounded-lg border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
                               placeholder={message.placeholder}
                               value={currentInput}
                               onChange={(e) => setCurrentInput(e.target.value)}
@@ -622,7 +791,7 @@ function Form() {
                                 handleInputSubmit(message.name, currentInput)
                               }
                               disabled={!currentInput}
-                              className="bg-black text-white px-3 sm:px-4 rounded-lg hover:bg-gray-800 disabled:opacity-50 text-sm sm:text-base transition-colors"
+                              className="w-full sm:w-24 md:w-28 h-12 sm:h-[52px] bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium transition-colors flex items-center justify-center"
                             >
                               Next
                             </button>
