@@ -20,6 +20,7 @@ async function fetchUsers() {
     }
 
     try {
+        console.log("Fetching data...", startDate, endDate, startTime, endTime);
         const MAIN_API = "https://nonucure-bot.vercel.app/api";
 
         const response = await fetch(`${MAIN_API}/users`, {
