@@ -119,7 +119,7 @@ const RecommendationPage = () => {
         return;
       }
 
-      const response = await axios.post(`http://localhost:5000/api/recommend`, {
+      const response = await axios.post(`https://nonucare-bot.vercel.app/api/recommend`, {
         userId: userId,
         gender: formData.gender,
         healthConcern: responses.healthConcern,
