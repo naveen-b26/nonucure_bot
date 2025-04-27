@@ -20,7 +20,7 @@ async function fetchUsers() {
     }
 
     try {
-        const MAIN_API = "http://localhost:5000/api";
+        const MAIN_API = "https://nonucare-bot.vercel.app/api";
 
         const response = await fetch(`${MAIN_API}/users`, {
             method: "POST",
