@@ -626,7 +626,7 @@ function Form() {
   ) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/submit-form`,
+        `https://nonucure-bot.vercel.app/api/submit-form`,
         {
           formData: updatedFormData,
           responses: updatedResponses,
