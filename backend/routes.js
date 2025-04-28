@@ -56,15 +56,19 @@ router.post('/recommend', async (req, res) => {
       userId,
       gender,
       healthConcern,
-      medicalConditions,
-      planningForBaby,
       hairStage,
       dandruff,
       dandruffStage,
       energyLevels,
-      goal
-    } = req.body;
+      naturalHair,
+      goal,
+      hairFall,
+      mainConcern,
+      medicalConditions, // Add this
+      planningForBaby,
 
+    } = req.body;
+    console.log("Received Recommendation Request Body:", req.body);
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
@@ -95,49 +99,31 @@ router.post('/recommend', async (req, res) => {
           break;
 
         case 'Hair Loss':
-          if (['Stage 1 (Slightly hair loss)', 'Stage 2 (Hair line receding)'].includes(hairStage)) {
-            recommendation.kit = 'Classic Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-          } else if (['Stage 3 (Developing bald spot)', 'Stage 4 (Visible bald spot)'].includes(hairStage)) {
-            recommendation.kit = 'Complete Hair Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-          } else if (
-            ['Stage 5 (Balding from crown area)', 'Stage 6 (Advanced balding)', 'Heavy Hair Fall', 'Coin Size Patch'].includes(hairStage)
-          ) {
-            recommendation.kit = 'Hair Restoration Kit';
-            recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%', 'Hair Growth Serum'];
-          }
-
-          // BP condition overrides
           if (medicalConditions?.includes('High Blood Pressure (BP)')) {
-            recommendation.kit = 'Anti-Dandruff Kit';
+            recommendation.kit = 'Classic Kit';
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-            recommendation.warning = 'Classic kit is not recommended for BP patients';
-          }
-
-          // Dandruff stage checks
-          if (dandruff === 'Yes' && ['Low', 'Mild', 'Moderate', 'Severe'].includes(dandruffStage)) {
-            recommendation.kit = 'Anti-Dandruff Kit';
-            recommendation.products = ['Gummies', 'Shampoo', 'Conditioner'];
-            if (dandruffStage === 'Severe') {
-              recommendation.products.push('Anti-Dandruff Serum');
+            recommendation.warning = 'Complete Kit not recommended due to BP condition';
+          } else if (planningForBaby === 'Yes') {
+            recommendation.kit = 'Classic Kit';
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+            recommendation.warning = 'Complete Kit not recommended while planning for a baby';
+          } else {
+            // Offer Complete Kit for stages 3-4, Classic Kit for stages 1-2
+            if (['Stage 3 (Developing bald spot)', 'Stage 4 (Visible bald spot)'].includes(hairStage)) {
+              recommendation.kit = 'Complete Hair Growth Kit';
+              recommendation.products = ['Minoxidil 5%', 'Biotin Gummies', 'Finibis'];
+              recommendation.description = 'Advanced hair loss treatment with Finibis.';
+            } else {
+              recommendation.kit = 'Classic Kit';
+              recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
+              recommendation.description = 'Basic hair loss treatment without Finibis.';
             }
           }
 
-          // Planning for baby
-          if (planningForBaby === 'Yes') {
-            recommendation.kit = 'Basic Hair Growth Kit';
-            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-            recommendation.warning = 'Finasteride is not recommended while planning for a baby';
+          // Add recommendation note based on dandruff
+          if (dandruff === 'Yes') {
+            recommendation.note = 'Consider using anti-dandruff shampoo alongside your kit.';
           }
-
-          // Energy check
-          if (['Medium', 'Low'].includes(energyLevels)) {
-            recommendation.products = recommendation.products || [];
-            recommendation.products.push('Energy Booster');
-          }
-
-          recommendation.description = 'Personalized hair loss support kit.';
           break;
 
         default:
@@ -166,9 +152,13 @@ router.post('/recommend', async (req, res) => {
         } else {
           return res.status(400).json({ message: 'Invalid health concern specified for female' });
         }
-      } else {
-        return res.status(400).json({ message: 'Invalid goal specified for female' });
       }
+      if(planningForBaby==='Recently had a baby (< 1 year)'){
+        recommendation.kit = 'Mothers Hair Growth Kit';
+        recommendation.products = ['Gummies', 'Shampoo', 'Hair Growth Serum'];
+        recommendation.description = 'Hair care kit for new mothers.';
+      }    
+        
 
       recommendation.description = 'Personalized female hair care kit.';
     }

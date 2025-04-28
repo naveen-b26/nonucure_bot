@@ -73,7 +73,7 @@ const RecommendationPage = () => {
   const navigate = useNavigate();
   const recommendedKits = [
     {
-      name: 'Basic Hair Growth Kit',
+      name: 'Classic Kit',
       url: "https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r"
     },
     {
@@ -84,8 +84,12 @@ const RecommendationPage = () => {
       name: 'Anti-Dandruff Kit',
       url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
     },
+    {
+      name: 'Mothers Hair Growth Kit',
+      url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
+    }
   ];
-  
+
 
   useEffect(() => {
     // Check if we have the required data
@@ -119,7 +123,7 @@ const RecommendationPage = () => {
         return;
       }
 
-      const response = await axios.post(`https://nonucure-bot.vercel.app/api/recommend`, {
+      const response = await axios.post(`http://localhost:5000/api/recommend`, {
         userId: userId,
         gender: formData.gender,
         healthConcern: responses.healthConcern,
@@ -132,7 +136,7 @@ const RecommendationPage = () => {
         hairFall: responses.hairFall,
         mainConcern: responses.mainConcern,
         medicalConditions: responses.medicalConditions, // Add this
-        planningForBaby: responses.planningForBaby, // Add this
+        planningForBaby: responses.planningForBaby,
       });
       localStorage.removeItem("userId");
       setRecommendation(response.data);
@@ -163,23 +167,23 @@ const RecommendationPage = () => {
     <div className="flex flex-col items-center p-2 sm:p-4 md:p-6 bg-gray-100 min-h-screen">
       <div className="w-full flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-7xl mx-auto">
         {/* Left Section - Assessment Details */}
-        
+
         <div className="w-full lg:w-[60%] bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4 lg:mb-0">
           {/* User Info Header */}
           <div className="border-b pb-4 mb-6">
-          
+
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-xl sm:text-2xl font-bold">Assessment Report</h1>
-             
+
             </div>
             <div className="flex items-center justify-between">
               <p className="text-gray-600">You Are Currently On</p>
-             
+
             </div>
             <h2 className="text-lg sm:text-xl font-semibold mt-2 text-green-600">
               {formData.gender === "Male"
                 ? `Male Pattern ${formData.healthConcern}`
-                : "Female Pattern Hair Loss"}
+                : "Your issue"}
             </h2>
           </div>
 
@@ -241,13 +245,12 @@ const RecommendationPage = () => {
                       </p>
                       <div className="flex items-center space-x-2">
                         <div
-                          className={`w-3 h-3 rounded-full ${
-                            responses.energyLevels === "High"
+                          className={`w-3 h-3 rounded-full ${responses.energyLevels === "High"
                               ? "bg-green-500"
                               : responses.energyLevels === "Medium"
-                              ? "bg-yellow-500"
-                              : "bg-red-500"
-                          }`}
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                            }`}
                         ></div>
                         <span className="text-gray-800">
                           {responses.energyLevels}
@@ -260,11 +263,10 @@ const RecommendationPage = () => {
                         <p className="font-medium text-gray-700 mb-2">Medical Conditions</p>
                         <div className="flex items-center space-x-2">
                           <div
-                            className={`w-3 h-3 rounded-full ${
-                              responses.medicalConditions
+                            className={`w-3 h-3 rounded-full ${responses.medicalConditions
                                 ? "bg-red-500"
                                 : "bg-green-500"
-                            }`}
+                              }`}
                           ></div>
                           <span className="text-gray-800">
                             {responses.medicalConditions}
@@ -364,7 +366,7 @@ const RecommendationPage = () => {
                 </div>
               ) : (
                 <>
-                  <p className="text-green-600 font-medium mt-2">{recommendation.kit}</p>
+                  <p className="text-green-600 text-xl text-center font-bold">{recommendation.kit}</p>
                   {/* ...existing products section... */}
                   {recommendation.warning && (
                     <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -372,6 +374,16 @@ const RecommendationPage = () => {
                         <span className="text-yellow-500 text-xl mr-3">⚠️</span>
                         <p className="text-yellow-700 text-sm sm:text-base">
                           {recommendation.warning}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {recommendation.note && (
+                    <div className="mt-4 mb-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start">
+                        <span className="text-blue-500 text-xl mr-3">ℹ️</span>
+                        <p className="text-blue-700 text-sm sm:text-base">
+                          {recommendation.note}
                         </p>
                       </div>
                     </div>
@@ -406,7 +418,7 @@ const RecommendationPage = () => {
                               "Prevents DHT led hair damage"}
                             {product === "Biotin Gummies" &&
                               "Delicious gummies packed with hair growth nutrients"}
-                            {product==="gummies" && "Essential vitamins & minerals for hair growth"}
+                            {product === "gummies" && "Essential vitamins & minerals for hair growth"}
                           </p>
                         </div>
                       </div>

@@ -15,11 +15,3 @@ code {
     monospace;
 }
 
-:root {
-  --button-min-height-mobile: 120px;
-  --button-min-height-desktop: 160px;
-  --image-size-small-mobile: 64px;
-  --image-size-small-desktop: 96px;
-  --image-size-large-mobile: 96px;
-  --image-size-large-desktop: 128px;
-}

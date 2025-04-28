@@ -368,7 +368,7 @@ function Form() {
           return {
             content: "What is your pregnancy status?",
             input: true,
-            name: "pregnancyStatus",
+            name: "planningForBaby",
             options: [
               { label: "Recently had a baby (< 1 year)" },
               { label: "Planning for pregnancy" },
@@ -379,14 +379,14 @@ function Form() {
           return {
             content: "What is your pregnancy status?",
             input: true,
-            name: "pregnancyStatus",
+            name: "planningForBaby",
             options: [
               { label: "Recently had a baby (< 1 year)" },
               { label: "Planning for pregnancy" },
               { label: "None" },
             ],
           };
-        case "pregnancyStatus":
+        case "planningForBaby":
           return {
             content: "What does your hair look like naturally?",
             input: true,
@@ -626,7 +626,7 @@ function Form() {
   ) => {
     try {
       const response = await axios.post(
-        `https://nonucure-bot.vercel.app/api/submit-form`,
+        `http://localhost:5000/api/submit-form`,
         {
           formData: updatedFormData,
           responses: updatedResponses,
@@ -698,7 +698,7 @@ function Form() {
                   {message.showStartButton && (
                     <button
                       onClick={handleStartClick}
-                      className="w-full sm:w-auto h-12 sm:h-[52px] mt-3 sm:mt-4 bg-black text-white px-8 rounded-lg hover:bg-gray-800 text-base font-medium transition-colors flex items-center justify-center"
+                      className="w-full sm:w-auto h-[45px] sm:h-[34px] mt-3 sm:mt-4 bg-black text-white px-8 rounded-lg hover:bg-gray-800 text-base font-medium transition-colors flex items-center justify-center"
                     >
                       Sure, let's start!
                     </button>
@@ -710,7 +710,7 @@ function Form() {
                         <button
                           key={idx}
                           onClick={action.onClick}
-                          className="flex-1 sm:flex-none bg-black text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg hover:bg-gray-800 text-sm sm:text-base transition-colors font-medium min-w-[120px] sm:min-w-[140px]"
+                          className="flex-1 sm:flex-none bg-black text-white  sm:py-3 sm:px-6 rounded-lg hover:bg-gray-800 text-sm sm:text-base transition-colors font-medium  sm:min-w-[140px]"
                         >
                           {action.label}
                         </button>
@@ -776,7 +776,7 @@ function Form() {
                           <div className="flex flex-col sm:flex-row gap-2 w-full">
                             <input
                               type={message.type || "text"}
-                              className="flex-1 p-3 sm:p-4 rounded-lg border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
+                              className="flex-1 p-3 h-[45px] sm:p-4 rounded-lg border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
                               placeholder={message.placeholder}
                               value={currentInput}
                               onChange={(e) => setCurrentInput(e.target.value)}
@@ -791,7 +791,7 @@ function Form() {
                                 handleInputSubmit(message.name, currentInput)
                               }
                               disabled={!currentInput}
-                              className="w-full sm:w-24 md:w-28 h-12 sm:h-[52px] bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium transition-colors flex items-center justify-center"
+                              className="w-full h-[45px] sm:w-24 md:w-28  sm:h-[45px] bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-base font-medium transition-colors flex items-center justify-center"
                             >
                               Next
                             </button>
