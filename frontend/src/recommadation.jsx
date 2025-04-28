@@ -140,7 +140,6 @@ const RecommendationPage = () => {
       });
       localStorage.removeItem("userId");
       setRecommendation(response.data);
-      console.log("Recommendation:", response.data);
     } catch (error) {
       console.error("Recommendation error:", error);
       setError("Error generating recommendations. Please try again later.");
