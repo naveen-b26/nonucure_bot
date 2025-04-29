@@ -2,6 +2,34 @@ const express = require('express');
 const { MaleUser, FemaleUser, Recommendation, PersonalDetails } = require('./models');
 const router = express.Router();
 
+const PRODUCT_KITS = {
+  'Classic Kit': {
+    products: ['Minoxidil 5%', 'Biotin Gummies','Sinibis'],
+    description: 'Basic hair loss treatment without Finibis.',
+    url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
+  },
+  'Complete Hair Growth Kit': {
+    products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis','Finasteride'],
+    description: 'Advanced hair loss treatment with Finibis.',
+    url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
+  },
+  'Anti-Dandruff Kit': {
+    products: ['Sinibis', 'Anti-Dandruff Shampoo', 'Scalp Treatment'],
+    description: 'Focus on treating dandruff before addressing hair loss.',
+    url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
+  },
+  'Mothers Hair Growth Kit': {
+    products: ['Gummies', 'Shampoo', 'Hair Growth Serum'],
+    description: 'Hair care kit for new mothers.',
+    url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
+  },
+  'Basic Hair Growth Kit': {
+    products: ['Gummies', 'Sinibis', 'Minoxidil 5%'],
+    description: 'Basic hair growth treatment for mild conditions.',
+    url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
+  }
+};
+
 // Submit Form Route
 router.post("/submit-form", async (req, res) => {
   try {
@@ -92,14 +120,24 @@ router.post('/recommend', async (req, res) => {
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Avoid Finasteride due to BP';
           } else {
-            recommendation.kit = 'Complete Beard Growth Kit';
+            recommendation.kit = 'Beard Growth Kit';
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
           }
           recommendation.description = 'Beard growth support kit.';
           break;
 
         case 'Hair Loss':
-          if (medicalConditions?.includes('High Blood Pressure (BP)')) {
+          if (hairStage === 'Stage 6 (Advanced balding)' || hairStage === 'Heavy Hair Fall') {
+            recommendation.needsDoctor = true;
+            recommendation.message = 'Sorry, we are not able to handle that worse situations of the hairfall. Please consult the nearest dermatologist for proper medical attention.';
+          } else if (['Stage 1 (Slightly hair loss)', 'Stage 2 (Hair line receding)'].includes(hairStage) && 
+                     dandruff === 'Yes' && 
+                     ['Moderate', 'Severe'].includes(dandruffStage)) {
+            recommendation.kit = 'Anti-Dandruff Kit';
+            recommendation.products = ['Anti-Dandruff Shampoo', 'Scalp Treatment'];
+            recommendation.description = 'Focus on treating dandruff before addressing hair loss.';
+            recommendation.warning = dandruffStage === 'Severe' ? 'Consider consulting a dermatologist alongside using this kit.' : null;
+          } else if (medicalConditions?.includes('High Blood Pressure (BP)')) {
             recommendation.kit = 'Classic Kit';
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Complete Kit not recommended due to BP condition';
@@ -110,13 +148,21 @@ router.post('/recommend', async (req, res) => {
           } else {
             // Offer Complete Kit for stages 3-4, Classic Kit for stages 1-2
             if (['Stage 3 (Developing bald spot)', 'Stage 4 (Visible bald spot)'].includes(hairStage)) {
-              recommendation.kit = 'Complete Hair Growth Kit';
-              recommendation.products = ['Minoxidil 5%', 'Biotin Gummies', 'Finibis'];
-              recommendation.description = 'Advanced hair loss treatment with Finibis.';
+              const kitDetails = PRODUCT_KITS['Complete Hair Growth Kit'];
+              recommendation = {
+                kit: 'Complete Hair Growth Kit',
+                products: kitDetails.products,
+                description: kitDetails.description,
+                url: kitDetails.url
+              };
             } else {
-              recommendation.kit = 'Classic Kit';
-              recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-              recommendation.description = 'Basic hair loss treatment without Finibis.';
+              const kitDetails = PRODUCT_KITS['Classic Kit'];
+              recommendation = {
+                kit: 'Classic Kit',
+                products: kitDetails.products,
+                description: kitDetails.description,
+                url: kitDetails.url
+              };
             }
           }
 
@@ -134,8 +180,13 @@ router.post('/recommend', async (req, res) => {
     // Female-specific recommendations
     else if (gender === 'Female') {
       if (goal === 'Control hair fall') {
-        recommendation.kit = 'Complete Hair Growth Kit';
-        recommendation.products = ['Gummies', 'Shampoo', 'Hair Growth Serum'];
+        const kitDetails = PRODUCT_KITS['Complete Hair Growth Kit'];
+        recommendation = {
+          kit: 'Complete Hair Growth Kit',
+          products: kitDetails.products,
+          description: kitDetails.description,
+          url: kitDetails.url
+        };
       } else if (goal === 'Regrow Hair') {
         if (['Hair thinning', 'Less volume on sides'].includes(healthConcern)) {
           recommendation.kit = 'Basic Hair Growth Kit';
@@ -154,9 +205,13 @@ router.post('/recommend', async (req, res) => {
         }
       }
       if(planningForBaby==='Recently had a baby (< 1 year)'){
-        recommendation.kit = 'Mothers Hair Growth Kit';
-        recommendation.products = ['Gummies', 'Shampoo', 'Hair Growth Serum'];
-        recommendation.description = 'Hair care kit for new mothers.';
+        const kitDetails = PRODUCT_KITS['Mothers Hair Growth Kit'];
+        recommendation = {
+          kit: 'Mothers Hair Growth Kit',
+          products: kitDetails.products,
+          description: kitDetails.description,
+          url: kitDetails.url
+        };
       }    
         
 
