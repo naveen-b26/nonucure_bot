@@ -653,10 +653,6 @@ const RecommendationPage = () => {
                          
                         </div>
                         
-                        {/* Hover tooltip */}
-                        <div className="absolute invisible group-hover:visible bg-gray-800 text-white text-xs p-2 rounded-md -top-8 left-1/2 transform -translate-x-1/2">
-                          Click to know more about how it helps
-                        </div>
                       </motion.div>
                     ))}
                   </div>
