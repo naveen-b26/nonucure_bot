@@ -14,7 +14,7 @@ const PRODUCT_KITS = {
     url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
   },
   'Anti-Dandruff Kit': {
-    products: ['Sinibis', 'Anti-Dandruff Shampoo', 'Scalp Treatment'],
+    products: ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'],
     description: 'Focus on treating dandruff before addressing hair loss.',
     url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
   },
@@ -23,11 +23,6 @@ const PRODUCT_KITS = {
     description: 'Hair care kit for new mothers.',
     url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
   },
-  'Basic Hair Growth Kit': {
-    products: ['Gummies', 'Sinibis', 'Minoxidil 5%'],
-    description: 'Basic hair growth treatment for mild conditions.',
-    url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
-  }
 };
 
 // Submit Form Route
@@ -189,7 +184,7 @@ router.post('/recommend', async (req, res) => {
         };
       } else if (goal === 'Regrow Hair') {
         if (['Hair thinning', 'Less volume on sides'].includes(healthConcern)) {
-          recommendation.kit = 'Basic Hair Growth Kit';
+          recommendation.kit = 'Classic Kit';
           recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
         } else if (['Coin size patches', 'Medium widening'].includes(healthConcern)) {
           recommendation.kit = 'Complete Hair Growth Kit';

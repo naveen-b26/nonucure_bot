@@ -27,7 +27,9 @@ import shilajit from "./pics/shilajit.jpg";
 import hgw from "./pics/hairGrowthSerum.jpg";
 import minibis from "./pics/minibis.jpg";
 import shampoo from "./pics/anti-dandruff(ketoconazole-shampoo).jpg"
+import shampoo2 from "./pics/anti-dandruff(conditioner).jpg"
 import finibis from "./pics/finibis.png"
+import finasteride from "./pics/finasteride.jpg"
 import { motion } from "framer-motion";
 import { RocketLaunchIcon, StarIcon, LockClosedIcon } from '@heroicons/react/24/solid';
 
@@ -200,7 +202,10 @@ const RecommendationPage = () => {
     "Hair Growth Serum": hgw,
     Shilajit: shilajit,
     Shampoo: shampoo,
+    "Ketonazole 1% Shampoo": shampoo,
+    "Anti-Dandruff Conditioner": shampoo2,
     Finibis: finibis,
+    Finasteride:finasteride,
   };
 
   const { formData, responses, userId } = useStore();
