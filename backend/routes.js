@@ -2,28 +2,6 @@ const express = require('express');
 const { MaleUser, FemaleUser, Recommendation, PersonalDetails } = require('./models');
 const router = express.Router();
 
-const PRODUCT_KITS = {
-  'Classic Kit': {
-    products: ['Minoxidil 5%', 'Biotin Gummies','Sinibis'],
-    description: 'Basic hair loss treatment without Finibis.',
-    url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
-  },
-  'Complete Hair Growth Kit': {
-    products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis','Finasteride'],
-    description: 'Advanced hair loss treatment with Finibis.',
-    url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
-  },
-  'Anti-Dandruff Kit': {
-    products: ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'],
-    description: 'Focus on treating dandruff before addressing hair loss.',
-    url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
-  },
-  'Mothers Hair Growth Kit': {
-    products: ['Gummies', 'Shampoo', 'Hair Growth Serum'],
-    description: 'Hair care kit for new mothers.',
-    url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
-  },
-};
 
 // Submit Form Route
 router.post("/submit-form", async (req, res) => {
@@ -37,6 +15,11 @@ router.post("/submit-form", async (req, res) => {
     const { gender, name, email, phone, age } = formData;
     let savedUser;
 
+    // Get current date and time
+    const now = new Date();
+    const date = now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
     // Prepare user data with personal details
     const userData = {
       name,
@@ -44,6 +27,8 @@ router.post("/submit-form", async (req, res) => {
       phone,
       age,
       gender,
+      date,
+      time,
       ...responses
     };
 
@@ -272,9 +257,21 @@ router.post('/users', async (req, res) => {
       end.setHours(23, 59, 59, 999); // End of day if no time specified
     }
 
-    // Fetch Male and Female Users
-    const maleUsers = await MaleUser.find({ createdAt: { $gte: start, $lte: end } });
-    const femaleUsers = await FemaleUser.find({ createdAt: { $gte: start, $lte: end } });
+    // Convert date strings to match the stored format
+    const startDateStr = start.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const endDateStr = end.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const startTimeStr = start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const endTimeStr = end.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    // Fetch Male and Female Users using date and time fields
+    const maleUsers = await MaleUser.find({
+      date: { $gte: startDateStr, $lte: endDateStr },
+      time: { $gte: startTimeStr, $lte: endTimeStr }
+    });
+    const femaleUsers = await FemaleUser.find({
+      date: { $gte: startDateStr, $lte: endDateStr },
+      time: { $gte: startTimeStr, $lte: endTimeStr }
+    });
 
     // Fetch Recommendations
     const maleUserIds = maleUsers.map(user => user._id);

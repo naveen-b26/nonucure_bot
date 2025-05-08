@@ -132,7 +132,7 @@ function populateTable(data, genderFilter) {
                 <td class="female-column">${user.hairStage || 'N/A'}</td>
                 <td class="female-column">${user.dandruff || 'N/A'}</td>
                 <td class="female-column">${user.dandruffStage || 'N/A'}</td>
-                <td class="female-column">${user.pregnancyStatus || 'N/A'}</td>
+                <td class="female-column">${user.planningForBaby || 'N/A'}</td>
                 <td class="female-column">${user.naturalHair || 'N/A'}</td>
                 <td class="female-column">${user.goal || 'N/A'}</td>
                 <td class="female-column">${user.hairFall || 'N/A'}</td>
