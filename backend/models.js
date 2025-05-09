@@ -8,8 +8,6 @@ const maleUserSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     age: { type: Number, required: true },
     gender: { type: String, required: true },
-    date: { type: String, required: true },
-    time: { type: String, required: true },
     healthConcern: { 
       type: String, 
       required: true,
@@ -23,12 +21,9 @@ const maleUserSchema = new mongoose.Schema(
     medicalConditions: [{
       type: String,
       enum: ['High Blood Pressure (BP)', 'Diabetes (Sugar)', 'Thyroid Issues', 'None of the above']
-    }],
-    previousTreatment: { type: String },
-    treatmentExperience: { type: String },
-    previousTreatmentSteps: { type: String }
+    }]
   },
-  { collection: "male_users" }
+  { timestamps: true, collection: "male_users" }
 );
 
 // Female User Schema
@@ -39,8 +34,6 @@ const femaleUserSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     age: { type: Number, required: true },
     gender: { type: String, required: true },
-    date: { type: String, required: true },
-    time: { type: String, required: true },
     healthConcern: { 
       type: String, 
       required: true,
@@ -54,9 +47,6 @@ const femaleUserSchema = new mongoose.Schema(
       type: String,
       enum: ['High Blood Pressure (BP)', 'Diabetes (Sugar)', 'Thyroid Issues', 'None of the above']
     }],
-    previousTreatment: { type: String },
-    treatmentExperience: { type: String },
-    previousTreatmentSteps: { type: String },
     hairStage: {
       type: String,
       enum: [
@@ -82,12 +72,9 @@ const femaleUserSchema = new mongoose.Schema(
         'Planning for pregnancy',
         'None'
       ]
-    },
-    previousTreatment: { type: String },
-    treatmentExperience: { type: String },
-    previousTreatmentSteps: { type: String }
+    }
   },
-  {  collection: "female_users" }
+  { timestamps: true, collection: "female_users" }
 );
 
 // Recommendation Schema

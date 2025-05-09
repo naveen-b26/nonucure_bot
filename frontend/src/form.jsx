@@ -43,7 +43,6 @@ function Form() {
   const navigate = useNavigate();
   const [currentInput, setCurrentInput] = useState("");
   const [step, setStep] = useState(0);
-  const [messageHistory, setMessageHistory] = useState([]);
   const messagesEndRef = useRef(null);
   const [messages, setMessages] = useState([
     {
@@ -54,10 +53,8 @@ function Form() {
       type: "bot",
       content: "May I have your details to proceed?",
       showStartButton: true,
-      showBackButton: false,
     },
   ]);
-
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -97,7 +94,8 @@ function Form() {
   }, [messages]);
 
   const handleStartClick = () => {
-    const newMessages = [
+    setMessages((prev) => [
+      ...prev,
       { type: "user", content: "Sure, let's start!" },
       {
         type: "bot",
@@ -105,36 +103,9 @@ function Form() {
         input: true,
         name: "name",
         placeholder: "Enter your name",
-        showBackButton: true
       },
-    ];
-    setMessages(prev => [...prev, ...newMessages]);
-    setMessageHistory(prev => [...prev, { step: 1, messages: newMessages }]);
+    ]);
     setStep(1);
-  };
-
-  const handleGoBack = () => {
-    if (step > 1) {
-      const previousStep = step - 1;
-      const previousMessages = messageHistory.find(h => h.step === previousStep)?.messages || [];
-      
-      // Remove the current question and user's answer
-      setMessages(prev => prev.slice(0, -2));
-      
-      // Update form data by removing the last entry
-      const lastFieldName = messages[messages.length - 1]?.name;
-      if (lastFieldName) {
-        const newFormData = { ...formData };
-        delete newFormData[lastFieldName];
-        setFormData(newFormData);
-
-        const newResponses = { ...responses };
-        delete newResponses[lastFieldName];
-        setResponses(newResponses);
-      }
-      
-      setStep(previousStep);
-    }
   };
   const getNextQuestion = (name, value) => {
     // Steps 1-5: Basic Information
@@ -146,7 +117,6 @@ function Form() {
             input: true,
             name: "email",
             placeholder: "Enter your email",
-            showBackButton: true
           };
         case "email":
           return {
@@ -154,7 +124,6 @@ function Form() {
             input: true,
             name: "phone",
             placeholder: "Enter your phone number",
-            showBackButton: true
           };
         case "phone":
           return {
@@ -163,7 +132,6 @@ function Form() {
             name: "age",
             placeholder: "Enter your age",
             type: "bot",
-            showBackButton: true
           };
         case "age":
           return {
@@ -174,7 +142,6 @@ function Form() {
               { label: "Male", image: male },
               { label: "Female", image: female },
             ],
-            showBackButton: true
           };
         case "gender":
           return {
@@ -194,7 +161,6 @@ function Form() {
                     { label: "Advanced widening", image: aW },
                     { label: "Less volume on sides", image: lV },
                   ],
-            showBackButton: true
           };
         default:
           return null;
@@ -219,7 +185,6 @@ function Form() {
                 { label: "Stage 6 (Advanced balding)", image: s6 },
                 { label: "Heavy Hair Fall", image: s7 },
               ],
-              showBackButton: true
             };
           } 
 
@@ -232,7 +197,6 @@ function Form() {
               { label: "Yes", image: dy },
               { label: "No", image: dn },
             ],
-            showBackButton: true
           };
 
         case "dandruff":
@@ -247,7 +211,6 @@ function Form() {
                   { label: "Moderate" },
                   { label: "Severe" },
                 ],
-                showBackButton: true
               }
             : {
                 content:
@@ -261,7 +224,6 @@ function Form() {
                   { label: "No" },
                   { label: "I'm not sure" },
                 ],
-                showBackButton: true
               };
 
         // Continue male flow
@@ -277,7 +239,6 @@ function Form() {
               { label: "No" },
               { label: "I'm not sure" },
             ],
-            showBackButton: true
           };
         case "thinningOrBaldSpots":
           return {
@@ -289,7 +250,6 @@ function Form() {
               { label: "Moderate" },
               { label: "High" },
             ],
-            showBackButton: true
           };
         case "energyLevels":  
           
@@ -302,7 +262,6 @@ function Form() {
                 { label: "Mild" },
                 { label: "No" },
               ],
-              showBackButton: true
             };
         case "hairFall":
           return {
@@ -315,7 +274,6 @@ function Form() {
               { label: "Heavy weight (fall/gain)" },
               { label: "No" },
             ],
-            showBackButton: true
           };
         case "severeIllness":
           return {
@@ -323,7 +281,6 @@ function Form() {
             input: true,
             name: "hairLossGenetic",
             options: [{ label: "Yes" }, { label: "No" }],
-            showBackButton: true
           };
         case "hairLossGenetic":
           return {
@@ -336,7 +293,6 @@ function Form() {
               { label: "Moderate" },
               { label: "High" },
             ],
-            showBackButton: true
           };
         case "stressLevel":
           return {
@@ -348,7 +304,6 @@ function Form() {
               { label: "Disturbed sleep" },
               { label: "Difficulty falling or staying asleep" },
             ],
-            showBackButton: true
           };
         case "sleepQuality":
           return {
@@ -356,58 +311,8 @@ function Form() {
             input: true,
             name: "planningForBaby",
             options: [{ label: "Yes" }, { label: "No" }],
-            showBackButton: true
           };
         case "planningForBaby":
-          return {
-            content: "Have you taken previous treatment?",
-            input: true,
-            name: "previousTreatment",
-            options: [
-              { label: "Yes" },
-              { label: "No" },
-            ],
-            showBackButton: true
-          };
-
-        case "previousTreatment":
-          if (value === "Yes") {
-            
-          
-          return {
-            content: "How was your experience with previous hair loss treatment?",
-            input: true,
-            name: "treatmentExperience",
-            options: [
-              { label: "Success" },
-              { label: "Failure" },
-              { label: "Not Applicable" },
-            ],
-            showBackButton: true
-          };
-        }break;
-
-        case "treatmentExperience":
-          return {
-            content: "Have you taken any of the following steps to treat hair loss?",
-            input: true,
-            multiple: true,
-            name: "previousTreatments",
-            options: [
-              { label: "Minoxidil Solution" },
-              { label: "Finasteride" },
-              { label: "Hair Serum" },
-              { label: "Laser Treatment" },
-              { label: "Hair Transplant" },
-              { label: "PRP" },
-              { label: "Ayurvedic Treatment" },
-              { label: "Hair Loss control Shampoo" },
-              { label: "None of the above" },
-            ],
-            showBackButton: true
-          };
-
-        case "previousTreatments":
           return {
             content: "Do you have any medical conditions?",
             input: true,
@@ -419,7 +324,6 @@ function Form() {
               { label: "Thyroid Issues" },
               { label: "None of the above" },
             ],
-            showBackButton: true
           };
       }
     } else {
@@ -447,7 +351,6 @@ function Form() {
               { label: "Yes", image: dy },
               { label: "No", image: dn },
             ],
-            showBackButton: true
           };
         case "dandruff":
           if (value === "Yes") {
@@ -494,7 +397,6 @@ function Form() {
               { label: "Wavy", image: wH },
               { label: "Coily", image: coH },
             ],
-            showBackButton: true
           };
         case "naturalHair":
           return {
@@ -505,7 +407,6 @@ function Form() {
               { label: "Control hair fall" },
               { label: "Regrow Hair" },
             ],
-            showBackButton: true
           };
         case "goal":
           return {
@@ -517,7 +418,6 @@ function Form() {
               { label: "Mild" },
               { label: "No" },
             ],
-            showBackButton: true
           };
         case "hairFall":
           return {
@@ -530,7 +430,6 @@ function Form() {
               { label: "Heavy weight (fall/gain)" },
               { label: "No" },
             ],
-            showBackButton: true
           };
         case "severeIllness":
           return {
@@ -561,7 +460,6 @@ function Form() {
               { label: "Disturbed sleep" },
               { label: "Difficulty falling or staying asleep" },
             ],
-            showBackButton: true
           };
         case "sleepQuality":
           return {
@@ -575,7 +473,6 @@ function Form() {
               { label: "Thyroid Issues" },
               { label: "None of the above" },
             ],
-            showBackButton: true
           };
       }
     }
@@ -585,49 +482,7 @@ function Form() {
 
 
 
-  const handleInputSubmit = async (name, value, isMultiple) => {
-    // Store current messages for history
-    const nextQuestion = getNextQuestion(name, value);
-    const currentMessages = [
-      { type: "user", content: value },
-      { type: "bot", ...nextQuestion, showBackButton: true }
-    ];
-    setMessageHistory(prev => [...prev, { step: step + 1, messages: currentMessages }]);
-
-    // Handle multiple selections
-    if (isMultiple) {
-      const currentValue = formData[name] || [];
-      let newValue;
-      
-      if (value === "None of the above") {
-        // If "None of the above" is selected, clear other selections
-        newValue = [value];
-      } else if (currentValue.includes("None of the above") && value !== "None of the above") {
-        // If a new option is selected and "None of the above" was previously selected, remove it
-        newValue = [value];
-      } else if (currentValue.includes(value)) {
-        // If value is already selected, remove it
-        newValue = currentValue.filter(v => v !== value);
-      } else {
-        // Add the new value to the array
-        newValue = [...currentValue.filter(v => v !== "None of the above"), value];
-      }
-
-      // Update form data and responses
-      const updatedFormData = { ...formData, [name]: newValue };
-      const updatedResponses = { ...responses, [name]: newValue };
-      setFormData(updatedFormData);
-      setResponses(updatedResponses);
-
-      // Update messages to show current selections
-      setMessages(prev => [
-        ...prev.slice(0, -1), // Remove the last message (the question)
-        { type: "user", content: newValue.join(", ") },
-        { type: "bot", ...getNextQuestion(name, newValue) }
-      ]);
-      return;
-    }
-
+  const handleInputSubmit = async (name, value) => {
     // Validation checks
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -770,35 +625,11 @@ function Form() {
     updatedResponses = responses
   ) => {
     try {
-      // Set current date and time
-      const now = new Date();
-      const currentDate = now.toISOString().split('T')[0];
-      const currentTime = now.toTimeString().split(' ')[0];
-
-      // Set pregnancyStatus based on planningForBaby value
-      const pregnancyStatus = updatedFormData.planningForBaby || 'None';
-
-      // Update the form data with required fields
-      const finalFormData = {
-        ...updatedFormData,
-        date: currentDate,
-        time: currentTime,
-        pregnancyStatus: pregnancyStatus
-      };
-
-      // Update responses with the same values
-      const finalResponses = {
-        ...updatedResponses,
-        date: currentDate,
-        time: currentTime,
-        pregnancyStatus: pregnancyStatus
-      };
-
       const response = await axios.post(
         `https://nonucure-bot.vercel.app/api/submit-form`,
         {
-          formData: finalFormData,
-          responses: finalResponses,
+          formData: updatedFormData,
+          responses: updatedResponses,
         }
       );
 
@@ -828,8 +659,6 @@ function Form() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-6 sm:px-0">
-      
-      
       <div className="flex items-center bg-black w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl text-white font-bold text-center text-xl sm:text-2xl font-mono p-3 rounded-t-lg">
         <a
           href="https://nonucare.com/?srsltid=AfmBOoqAfH4E3IkzoKgwxCjZDobgjDnnjmPSYlma7IchORUt_qsLye_n"
@@ -971,22 +800,8 @@ function Form() {
                       </div>
                     )}
                 </div>
-                
               </motion.div>
-              
-            )
-            )}
-            {step > 5 && (
-        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mb-4 relative left-2">
-          <button
-            onClick={handleGoBack}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          >
-            ← Go Back
-          </button>
-        </div>
-      )}
-            
+            ))}
             <div ref={messagesEndRef} />
           </div>
         </div>

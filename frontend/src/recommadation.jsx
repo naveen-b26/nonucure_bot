@@ -280,8 +280,6 @@ const RecommendationPage = () => {
         mainConcern: responses.mainConcern,
         medicalConditions: responses.medicalConditions, // Add this
         planningForBaby: responses.planningForBaby,
-        medicalConditions:responses.medicalConditions,
-        pregnancyStatus:responses.pregnancyStatus,
       });
       localStorage.removeItem("userId");
       setRecommendation(response.data);
@@ -329,8 +327,8 @@ const RecommendationPage = () => {
               <h2 className="text-lg font-medium text-gray-800">
                 Current Condition:
                 <span className="text-green-600 ml-2">
-                  {formData.gender
-                    ? `${formData.gender} Pattern ${formData.healthConcern}`
+                  {formData.gender === "Male"
+                    ? `Male Pattern ${formData.healthConcern}`
                     : "Your issue"}
                 </span>
               </h2>
