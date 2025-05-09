@@ -129,16 +129,16 @@ router.post('/recommend', async (req, res) => {
                      dandruff === 'Yes' && 
                      ['Moderate', 'Severe'].includes(dandruffStage)) {
             recommendation.kit = 'Anti-Dandruff Kit';
-            recommendation.products = ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'];
+            recommendation.products = ['Anti-Dandruff Shampoo', 'Scalp Treatment'];
             recommendation.description = 'Focus on treating dandruff before addressing hair loss.';
             recommendation.warning = dandruffStage === 'Severe' ? 'Consider consulting a dermatologist alongside using this kit.' : null;
           } else if (medicalConditions?.includes('High Blood Pressure (BP)')) {
             recommendation.kit = 'Classic Kit';
-            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies','Sinibis'];
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Complete Kit not recommended due to BP condition';
           } else if (planningForBaby === 'Yes') {
             recommendation.kit = 'Classic Kit';
-            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies','Sinibis'];
+            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Complete Kit not recommended while planning for a baby';
           } else {
             // Offer Complete Kit for stages 3-4, Classic Kit for stages 1-2
