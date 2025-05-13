@@ -21,7 +21,7 @@ async function fetchUsers() {
 
     try {
         console.log("Fetching data...", startDate, endDate, startTime, endTime);
-        const MAIN_API = "https://nonucure-bot.vercel.app/api";
+        const MAIN_API = "http://localhost:5000/api";
 
         const response = await fetch(`${MAIN_API}/users`, {
             method: "POST",

@@ -2,28 +2,28 @@ const express = require('express');
 const { MaleUser, FemaleUser, Recommendation, PersonalDetails } = require('./models');
 const router = express.Router();
 
-const PRODUCT_KITS = {
-  'Classic Kit': {
-    products: ['Minoxidil 5%', 'Biotin Gummies','Sinibis'],
-    description: 'Basic hair loss treatment without Finibis.',
-    url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
-  },
-  'Complete Hair Growth Kit': {
-    products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis','Finasteride'],
-    description: 'Advanced hair loss treatment with Finibis.',
-    url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
-  },
-  'Anti-Dandruff Kit': {
-    products: ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'],
-    description: 'Focus on treating dandruff before addressing hair loss.',
-    url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
-  },
-  'Mothers Hair Growth Kit': {
-    products: ['Gummies', 'Shampoo', 'Hair Growth Serum'],
-    description: 'Hair care kit for new mothers.',
-    url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
-  },
-};
+// const PRODUCT_KITS = {
+//   'Classic Kit': {
+//     products: ['Minoxidil 5%', 'Biotin Gummies','Sinibis'],
+//     description: 'Basic hair loss treatment without Finibis.',
+//     url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r'
+//   },
+//   'Complete Hair Growth Kit': {
+//     products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis','Finasteride'],
+//     description: 'Advanced hair loss treatment with Finibis.',
+//     url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r'
+//   },
+//   'Anti-Dandruff Kit': {
+//     products: ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'],
+//     description: 'Focus on treating dandruff before addressing hair loss.',
+//     url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r'
+//   },
+//   'Mothers Hair Growth Kit': {
+//     products: ['Biotin Gummies', 'Shampoo', 'Hair Growth Serum'],
+//     description: 'Hair care kit for new mothers.',
+//     url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
+//   },
+// };
 
 // Submit Form Route
 router.post("/submit-form", async (req, res) => {
@@ -73,6 +73,18 @@ router.post("/submit-form", async (req, res) => {
 });
 
 // Recommend Route
+// Assuming PRODUCT_KITS is defined globally or passed as a constant.
+// Example structure for PRODUCT_KITS (add/modify as per your actual implementation):
+const PRODUCT_KITS = {
+  'Beard Growth Kit': { products: ['Minoxidil 5%', 'Biotin Gummies'], description: 'Standard beard growth kit.', url: '/beard-growth-kit' },
+  'Anti-Dandruff Kit': { products: ['Ketoconazole 1% Shampoo', 'Anti Dandruff Conditioner', 'Biotin Gummies'], description: 'Kit to combat dandruff.', url: 'https://nonucare.com/products/anti-dandruff-kit?_pos=1&_sid=970e5b4fb&_ss=r' },
+  'Complete Hair Growth Kit': { products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis', 'Finasteride'], description: 'Comprehensive kit for significant hair growth.', url: 'https://nonucare.com/products/the-complete-hair-kit?_pos=1&_sid=9a06b0998&_ss=r' },
+  'Classic Kit': { products: ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis'], description: 'Classic kit for hair growth and maintenance.', url: 'https://nonucare.com/products/the-classic-hair-kit?_pos=2&_sid=77a3f7455&_ss=r' },
+  'Mothers Hair Growth Kit': { products: ['Biotin Gummies', 'Shampoo', 'Hair Growth Serum'], description: 'Specialized kit for post-pregnancy hair care, focusing on gentle nourishment and strengthening.', url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0' },
+  'Active Hair Growth Kit': { products: ['Active Growth Serum', 'Ketoconazole 1% Shampoo', 'Biotin Gummies'], description: 'Kit designed for active hair regrowth and promoting scalp health.', url: 'https://nonucare.com/products/active-hair-growth-kit?_pos=1&_psq=active&_ss=e&_v=1.0' },
+
+};
+
 router.post('/recommend', async (req, res) => {
   try {
     const {
@@ -80,24 +92,24 @@ router.post('/recommend', async (req, res) => {
       gender,
       healthConcern,
       hairStage,
-      dandruff,
-      dandruffStage,
+      dandruff, // 'Yes' or 'No'
+      dandruffStage, // 'Mild', 'Moderate', 'Severe' (if dandruff is 'Yes')
       energyLevels,
       naturalHair,
-      goal,
+      goal, // 'Control hair fall', 'Regrow Hair'
       hairFall,
       mainConcern,
-      medicalConditions, // Add this
-      planningForBaby,
-
+      medicalConditions,
+      planningForBaby, // 'Recently had a baby (< 1 year)', 'Trying to conceive', 'No'
     } = req.body;
     console.log("Received Recommendation Request Body:", req.body);
+
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
     // Validate user exists
-    const UserModel = gender === 'Male' ? MaleUser : FemaleUser;
+    const UserModel = gender === 'Male' ? MaleUser : FemaleUser; // Assuming MaleUser and FemaleUser models
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -105,19 +117,14 @@ router.post('/recommend', async (req, res) => {
     }
 
     let recommendation = {};
+    let kitDetails; // Variable to hold details from PRODUCT_KITS
 
     // Male-specific recommendations
     if (gender === 'Male') {
       switch (healthConcern) {
         case 'Beard Growth':
-          if (medicalConditions?.includes('High Blood Pressure (BP)')) {
-            recommendation.kit = 'Basic Beard Growth Kit';
-            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-            recommendation.warning = 'Avoid Finasteride due to BP';
-          } else {
-            recommendation.kit = 'Beard Growth Kit';
-            recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
-          }
+          recommendation.kit = 'Beard Growth Kit';
+          recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
           recommendation.description = 'Beard growth support kit.';
           break;
 
@@ -125,25 +132,25 @@ router.post('/recommend', async (req, res) => {
           if (hairStage === 'Stage 6 (Advanced balding)' || hairStage === 'Heavy Hair Fall') {
             recommendation.needsDoctor = true;
             recommendation.message = 'Sorry, we are not able to handle that worse situations of the hairfall. Please consult the nearest dermatologist for proper medical attention.';
-          } else if (['Stage 1 (Slightly hair loss)', 'Stage 2 (Hair line receding)'].includes(hairStage) && 
-                     dandruff === 'Yes' && 
-                     ['Moderate', 'Severe'].includes(dandruffStage)) {
+          } else if (['Stage 1 (Slightly hair loss)', 'Stage 2 (Hair line receding)'].includes(hairStage) &&
+            dandruff === 'Yes' &&
+            ['Moderate', 'Severe'].includes(dandruffStage)) {
             recommendation.kit = 'Anti-Dandruff Kit';
-            recommendation.products = ['Anti-Dandruff Shampoo', 'Scalp Treatment'];
+            recommendation.products = ['Ketoconazole 1% Shampoo', 'Anti-Dandruff Conditioner', 'Biotin Gummies'];
             recommendation.description = 'Focus on treating dandruff before addressing hair loss.';
             recommendation.warning = dandruffStage === 'Severe' ? 'Consider consulting a dermatologist alongside using this kit.' : null;
           } else if (medicalConditions?.includes('High Blood Pressure (BP)')) {
             recommendation.kit = 'Classic Kit';
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Complete Kit not recommended due to BP condition';
-          } else if (planningForBaby === 'Yes') {
+          } else if (planningForBaby === 'Yes') { // For male, "Yes" implies planning with a partner for a baby
             recommendation.kit = 'Classic Kit';
             recommendation.products = ['Minoxidil 5%', 'Biotin Gummies'];
             recommendation.warning = 'Complete Kit not recommended while planning for a baby';
           } else {
             // Offer Complete Kit for stages 3-4, Classic Kit for stages 1-2
             if (['Stage 3 (Developing bald spot)', 'Stage 4 (Visible bald spot)'].includes(hairStage)) {
-              const kitDetails = PRODUCT_KITS['Complete Hair Growth Kit'];
+              kitDetails = PRODUCT_KITS['Complete Hair Growth Kit'];
               recommendation = {
                 kit: 'Complete Hair Growth Kit',
                 products: kitDetails.products,
@@ -151,7 +158,7 @@ router.post('/recommend', async (req, res) => {
                 url: kitDetails.url
               };
             } else {
-              const kitDetails = PRODUCT_KITS['Classic Kit'];
+              kitDetails = PRODUCT_KITS['Classic Kit'];
               recommendation = {
                 kit: 'Classic Kit',
                 products: kitDetails.products,
@@ -171,65 +178,95 @@ router.post('/recommend', async (req, res) => {
           return res.status(400).json({ message: 'Invalid health concern specified for male' });
       }
     }
-
-    // Female-specific recommendations
+    // Female-specific recommendations (UPDATED LOGIC)
     else if (gender === 'Female') {
-      if (goal === 'Control hair fall') {
-        const kitDetails = PRODUCT_KITS['Complete Hair Growth Kit'];
-        recommendation = {
-          kit: 'Complete Hair Growth Kit',
-          products: kitDetails.products,
-          description: kitDetails.description,
-          url: kitDetails.url
-        };
-      } else if (goal === 'Regrow Hair') {
-        if (['Hair thinning', 'Less volume on sides'].includes(healthConcern)) {
-          recommendation.kit = 'Classic Kit';
-          recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-        } else if (['Coin size patches', 'Medium widening'].includes(healthConcern)) {
-          recommendation.kit = 'Complete Hair Growth Kit';
-          recommendation.products = ['Gummies', 'Sinibis', 'Minoxidil 5%'];
-        } else if (healthConcern === 'Advanced widening') {
-          recommendation.needsDoctor = true;
-          recommendation.message = 'Consult a hair doctor for advanced widening.';
-          recommendation.kit = 'Doctor Consultation Required';
-          recommendation.products = [];
-          recommendation.description = 'Your condition requires professional medical attention.';
+      // --- Priority 1: Recently had a baby (< 1 year) ---
+      if (planningForBaby === 'Recently had a baby (< 1 year)') {
+        if (hairStage === 'Stage 4 (Visible scalp)' || (hairStage==='Stage 5 (Advanced thinning)' && dandruff==='No')) {
+          kitDetails = PRODUCT_KITS['Mothers Hair Growth Kit'];
+          recommendation = {
+            kit: 'Mothers Hair Growth Kit',
+            products: kitDetails.products,
+            description: kitDetails ? kitDetails.description : 'Specialized kit for post-pregnancy hair care, focusing on gentle nourishment and strengthening.',
+            url: kitDetails ? kitDetails.url : null
+          };
         } else {
-          return res.status(400).json({ message: 'Invalid health concern specified for female' });
+          kitDetails = PRODUCT_KITS['Active Hair Growth Kit'];
+          recommendation = {
+            kit: 'Active Hair Growth Kit',
+            products: kitDetails ? kitDetails.products : ['Active Growth Serum', 'Ketoconazole 1% Shampoo', 'Biotin Gummies'],
+            description: kitDetails ? kitDetails.description : 'Supports hair growth while planning for a baby.',
+            url: kitDetails ? kitDetails.url : null
+          };
         }
       }
-      if(planningForBaby==='Recently had a baby (< 1 year)'){
-        const kitDetails = PRODUCT_KITS['Mothers Hair Growth Kit'];
+      // --- Priority 2: Trying to conceive / Planning for pregnancy ---
+      else if (planningForBaby === 'Planning for pregnancy') {
+        kitDetails = PRODUCT_KITS['Active Hair Growth Kit'];
         recommendation = {
-          kit: 'Mothers Hair Growth Kit',
-          products: kitDetails.products,
-          description: kitDetails.description,
-          url: kitDetails.url
+          kit: 'Active Hair Growth Kit',
+          products: kitDetails ? kitDetails.products : ['Active Growth Serum', 'Ketoconazole 1% Shampoo', 'Biotin Gummies'],
+          description: kitDetails ? kitDetails.description : 'Supports hair growth while planning for pregnancy.',
+          url: kitDetails ? kitDetails.url : null
         };
-      }    
-        
+      }
+      // --- Priority 3: Dandruff (when NOT planning for baby or recently had one) ---
+      else if (dandruff === 'Yes' && planningForBaby === 'None') { // Explicitly check for 'None' here
+        if (dandruffStage === 'Severe') {
+          // Mild or Moderate dandruff, and planningForBaby is 'None'
+          // THIS IS THE CHANGE: Recommends Classic Kit as per notes "Excess + None = Classic Kit"
+          kitDetails = PRODUCT_KITS['Classic Kit'];
+          recommendation = {
+            kit: 'Classic Kit',
+            products: kitDetails ? kitDetails.products : ['Minoxidil 5%', 'Biotin Gummies', 'Sinibis'],
+            description: kitDetails ? kitDetails.description : 'Classic kit for managing excess dandruff.',
+            url: kitDetails ? kitDetails.url : null
+          };
+        }
+      }
+      // --- Priority 4: No dandruff, no pregnancy conditions ---
+      else if (dandruff === 'No' && planningForBaby === 'None') {
+        kitDetails = PRODUCT_KITS['Active Hair Growth Kit'];
+        recommendation = {
+          kit: 'Active Hair Growth Kit',
+          products: kitDetails ? kitDetails.products : ['Active Growth Serum', 'Ketoconazole 1% Shampoo', 'Biotin Gummies'],
+          description: kitDetails ? kitDetails.description : 'Basic hair care for general maintenance.',
+          url: kitDetails ? kitDetails.url : null
+        };
+      }
+      // --- Fallback for any other conditions (e.g., unexpected planningForBaby values or other health concerns for female) ---
+      else {
+        kitDetails = PRODUCT_KITS['Active Hair Growth Kit'];
+        recommendation = {
+          kit: 'Active Hair Growth Kit',
+          products: kitDetails ? kitDetails.products : ['Active Growth Serum', 'Ketoconazole 1% Shampoo', 'Biotin Gummies'],
+          description: kitDetails ? kitDetails.description : 'General hair care kit for various conditions.',
+          url: kitDetails ? kitDetails.url : null
+        };
+      }
 
-      recommendation.description = 'Personalized female hair care kit.';
-    }
-
-    else {
+      // Ensure description is set, using a default if not already specified
+      recommendation.description = recommendation.description || 'Personalized female hair care kit.';
+    } else {
       return res.status(400).json({ message: 'Invalid gender specified' });
     }
 
     // Save to DB
-    const recommendationDoc = new Recommendation({
+    const recommendationDoc = new Recommendation({ // Assuming Recommendation model
       userId,
       userGender: gender,
       healthConcern,
       kit: recommendation.kit,
       products: recommendation.products,
       description: recommendation.description,
-      ...(healthConcern === 'Hair Loss' && {
+      ...(healthConcern === 'Hair Loss' && { // Only save these fields if healthConcern is 'Hair Loss'
         hairStage,
         dandruffStage,
         energyLevels
-      })
+      }),
+      // Include relevant female-specific inputs for better tracking
+      planningForBaby: planningForBaby,
+      dandruff: dandruff,
     });
 
     const savedRecommendation = await recommendationDoc.save();
@@ -279,7 +316,7 @@ router.post('/users', async (req, res) => {
     // Fetch Recommendations
     const maleUserIds = maleUsers.map(user => user._id);
     const femaleUserIds = femaleUsers.map(user => user._id);
-    
+
     const maleRecommendations = await Recommendation.find({ userId: { $in: maleUserIds } });
     const femaleRecommendations = await Recommendation.find({ userId: { $in: femaleUserIds } });
 

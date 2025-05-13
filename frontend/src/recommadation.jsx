@@ -38,7 +38,7 @@ const TIMELINE_MONTHS = "3-4";
 
 const LockedFeature = ({ title, onClick }) => {
   const [isHovering, setIsHovering] = useState(false);
-  
+
   return (
     <motion.div
       onHoverStart={() => setIsHovering(true)}
@@ -57,7 +57,7 @@ const LockedFeature = ({ title, onClick }) => {
         </motion.div>
       </div>
       <p className="text-sm text-gray-500 mt-1">
-        Unlock after starting treatment! 
+        Unlock after starting treatment!
       </p>
     </motion.div>
   );
@@ -99,13 +99,13 @@ const UnlockDialog = ({ isOpen, closeModal }) => (
               <div className="mt-2">
                 <p className="text-sm text-gray-500">
                   Purchase our recommended kit to unlock:
-                  <ul className="list-decimal ml-4 mt-2">
-                    <li>Detailed Doctor's Prescription</li>
-                    <li>Personalized Diet Plan</li>
-                    <li>Progress Tracking</li>
-                    <li>Expert Support</li>
-                  </ul>
                 </p>
+                <ul className="list-decimal ml-4 mt-2 text-sm text-gray-500">
+                  <li>Detailed Doctor's Prescription</li>
+                  <li>Personalized Diet Plan</li>
+                  <li>Progress Tracking</li>
+                  <li>Expert Support</li>
+                </ul>
               </div>
 
               <div className="mt-4">
@@ -127,7 +127,7 @@ const UnlockDialog = ({ isOpen, closeModal }) => (
 
 // Update the MoneyBackGuarantee component to include the name
 const MoneyBackGuarantee = ({ userName }) => (
-  <div className="bg-gray-50 shadow-sm rounded-lg p-6 text-center mb-4">
+  <div className="bg-gray-50 w-full  shadow-sm rounded-lg p-6 text-center mb-4">
     <div className="flex justify-center mb-4">
       <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z"/>
@@ -139,7 +139,7 @@ const MoneyBackGuarantee = ({ userName }) => (
     <p className="text-2xl font-bold text-gray-800 mb-4">
       If the solution doesn't work out, we'll refund your money.
     </p>
-    
+
   </div>
 );
 
@@ -195,14 +195,14 @@ const RecommendationPage = () => {
   };
 
   const productImages = {
-    Gummies: Gummies,
     "Biotin Gummies": Gummies,
     Sinibis: Sinibis,
     "Minoxidil 5%": minibis,
     "Hair Growth Serum": hgw,
+    "Active Growth Serum":hgw,
     Shilajit: shilajit,
     Shampoo: shampoo,
-    "Ketonazole 1% Shampoo": shampoo,
+    "Ketoconazole 1% Shampoo": shampoo,
     "Anti-Dandruff Conditioner": shampoo2,
     Finibis: finibis,
     Finasteride:finasteride,
@@ -229,6 +229,10 @@ const RecommendationPage = () => {
     {
       name: 'Mothers Hair Growth Kit',
       url: 'https://nonucare.com/products/mother-s-hair-growth-kit?_pos=1&_psq=mothers+hair+grow&_ss=e&_v=1.0'
+    },
+    {
+      name:'Active Hair Growth Kit',
+      url: 'https://nonucare.com/products/active-hair-growth-kit?_pos=1&_psq=active&_ss=e&_v=1.0',
     }
   ];
 
@@ -251,7 +255,37 @@ const RecommendationPage = () => {
     };
 
     fetchData();
-  }, [formData, responses]);
+
+    // Add event listener for beforeunload to warn on page refresh/close
+    const handleBeforeUnload = (event) => {
+      // Modern browsers prevent custom messages for security reasons.
+      // They will show a generic message like "Changes you made may not be saved."
+      // However, returning an empty string or setting returnValue can still trigger the prompt.
+      event.preventDefault();
+      event.returnValue = "If you refresh or navigate away, your personalized recommendation will be lost. Are you sure you want to proceed?";
+    };
+
+    // Add event listener for popstate to warn on browser back/forward navigation
+    const handlePopState = (event) => {
+      const message = "If you navigate away, your personalized recommendation will be lost. Are you sure you want to proceed?";
+      const confirmed = window.confirm(message);
+      if (!confirmed) {
+        // If the user cancels, push the current state back to the history stack.
+        // This effectively cancels the navigation and keeps them on the current page.
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup function to remove event listeners when the component unmounts
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+
+  }, [formData, responses, navigate]); // Added navigate to dependency array for consistency
 
   const fetchRecommendation = async () => {
     setLoading(true);
@@ -281,7 +315,7 @@ const RecommendationPage = () => {
         medicalConditions: responses.medicalConditions, // Add this
         planningForBaby: responses.planningForBaby,
       });
-      localStorage.removeItem("userId");
+      localStorage.removeItem("userId"); // Clear userId after fetching
       setRecommendation(response.data);
     } catch (error) {
       console.error("Recommendation error:", error);
@@ -303,11 +337,11 @@ const RecommendationPage = () => {
       </div>
     );
   }
-
-  // Update the main container and layout styles
+// Update the main container and layout styles
   return (
-    <div className="flex flex-col items-center p-2 sm:p-4 md:p-6 bg-gray-100 min-h-screen">
-      <div className="w-full flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-7xl mx-auto">
+    <div className=" flex flex-col items-center p-2 sm:p-4 md:p-6 bg-gray-100 min-h-screen">
+     <div>
+     <div className="w-full flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-7xl mx-auto">
         {/* Left Section - Assessment Details */}
 
         <div className="w-full lg:w-[60%] bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4 lg:mb-0">
@@ -327,8 +361,8 @@ const RecommendationPage = () => {
               <h2 className="text-lg font-medium text-gray-800">
                 Current Condition:
                 <span className="text-green-600 ml-2">
-                  {formData.gender === "Male"
-                    ? `Male Pattern ${formData.healthConcern}`
+                  {formData.gender
+                    ? `${formData.gender} Pattern ${formData.healthConcern}`
                     : "Your issue"}
                 </span>
               </h2>
@@ -429,7 +463,6 @@ const RecommendationPage = () => {
                         </span>
                       </div>
                     </div>
-
                     {responses.medicalConditions && (
                       <div className="p-4 rounded-lg bg-gray-50">
                         <p className="font-medium text-gray-700 mb-2">Medical Conditions</p>
@@ -472,6 +505,7 @@ const RecommendationPage = () => {
 
               {formData.gender === "Female" && (
                 <>
+
                   <div className="p-4 rounded-lg bg-gray-50">
                     <p className="font-medium text-gray-700 mb-2">
                       Natural Hair Type
@@ -489,10 +523,21 @@ const RecommendationPage = () => {
                       </span>
                     </div>
                   </div>
-
                   <div className="p-4 rounded-lg bg-gray-50">
-                    <p className="font-medium text-gray-700 mb-2">Hair Goal</p>
-                    <span className="text-gray-800">{responses.goal}</span>
+                    <p className="font-medium text-gray-700 mb-2">
+                     Pregranancy Status
+                    </p>
+                    <span className="text-gray-800">{responses.planningForBaby}</span>
+                  </div>
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">Hair Stage</p>
+                    <span className="text-gray-800">{responses.hairStage}</span>
+                  </div>
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <p className="font-medium text-gray-700 mb-2">
+                     Dandruff - Dandruff Stage
+                    </p>
+                    <span className="text-gray-800">{responses.dandruff}-{responses.dandruffStage}</span>
                   </div>
 
                   <div className="p-4 rounded-lg bg-gray-50">
@@ -514,7 +559,7 @@ const RecommendationPage = () => {
               )}
             </div>
           </div>
-        
+
           <LockedFeature
             title="Doctor's Prescription"
             onClick={() => setIsUnlockDialogOpen(true)}
@@ -528,10 +573,7 @@ const RecommendationPage = () => {
             isOpen={isUnlockDialogOpen}
             closeModal={() => setIsUnlockDialogOpen(false)}
           />
-          {/* Add MoneyBackGuarantee component */}
-          {recommendation && !recommendation.needsDoctor && (
-            <MoneyBackGuarantee userName={formData.name} />
-          )}
+
         </div>
 
         {/* Right Section - Recommendations */}
@@ -563,11 +605,11 @@ const RecommendationPage = () => {
               ) : (
                 <>
                   <div className="relative">
-                    
+
                       <div className="absolute -top-5 right-0 font-bold bg-white text-green-400 text-xs px-3 py-1 rounded-full shadow-sm border-2 border-white ring-2 ring-green-400">
                         Top Pick ⭐
                       </div>
-                    
+
                     <p className="text-green-600 border-[1px] py-2 border-green-400 rounded-xl flex items-center justify-center text-4xl text-center font-bold mb-2">
                       {recommendation.kit}
                     </p>
@@ -578,8 +620,8 @@ const RecommendationPage = () => {
                       Based on your unique assessment, we curated this kit for you!
                     </p>
                     <div className="flex items-center justify-center text-green-600 text-xl font-medium">
-                     
-                      Products in this kit:
+
+                      Inside the kit
                     </div>
                   </div>
                   {/* ...existing products section... */}
@@ -608,7 +650,7 @@ const RecommendationPage = () => {
                     {recommendation.products?.map((product, index) => (
                       <motion.div
                         key={index}
-                        whileHover={{ 
+                        whileHover={{
                           y: -5,
                           transition: { duration: 0.2 }
                         }}
@@ -641,7 +683,7 @@ const RecommendationPage = () => {
                             {product === "gummies" && "Essential vitamins & minerals for hair growth"}
                             {product ==="Finibis" && "Stops baldness and promotes hair growth and improve hair density by 20%"}
                           </p>
-                          
+
                           {/* Add trust indicators */}
                           <div className="mt-3 flex items-center text-sm text-gray-500">
                             <StarIcon className="h-4 w-4 text-yellow-400 mr-1" />
@@ -649,10 +691,10 @@ const RecommendationPage = () => {
                             <span className="mx-2">•</span>
                             <span>Trusted by 500+ users</span>
                           </div>
-                          
-                         
+
+
                         </div>
-                        
+
                       </motion.div>
                     ))}
                   </div>
@@ -713,7 +755,7 @@ const RecommendationPage = () => {
                     </div>
                   )}
 
-                  
+
 
                 </>
               )}
@@ -728,7 +770,15 @@ const RecommendationPage = () => {
             Back to Assessment
           </button>
         </div>
-      </div>
+
+     </div>
+       {/* Add MoneyBackGuarantee component */}
+       {recommendation && !recommendation.needsDoctor && (
+             <MoneyBackGuarantee userName={formData.name} />
+           )}
+     </div>
+
+
     </div>
   );
 };
