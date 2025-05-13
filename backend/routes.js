@@ -37,13 +37,20 @@ router.post("/submit-form", async (req, res) => {
     const { gender, name, email, phone, age } = formData;
     let savedUser;
 
-    // Prepare user data with personal details
+    // Get current date and time
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0];
+
+    // Prepare user data with personal details and date/time
     const userData = {
       name,
       email,
       phone,
       age,
       gender,
+      date,
+      time,
       ...responses
     };
 
