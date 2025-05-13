@@ -58,36 +58,6 @@ function Form() {
     },
   ]);
 
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (step > 0 && Object.keys(formData).length > 0) {
-        e.preventDefault();
-        e.returnValue = "You have unsaved changes. Do you want to leave?";
-
-        // Save the current progress
-        const existingUserId = localStorage.getItem("userId");
-        if (!existingUserId) {
-          axios
-            .post(`https://nonucure-bot.vercel.app/api/submit-form`, {
-              formData,
-              responses,
-            })
-            .then((response) => {
-              localStorage.setItem("userId", response.data.userId);
-              setUserId(response.data.userId);
-            })
-            .catch((error) => {
-              console.error("Error saving progress:", error);
-            });
-        }
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [step, formData, responses, setUserId]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -868,7 +838,7 @@ function Form() {
       };
 
       const response = await axios.post(
-        `https://nonucure-bot.verce.app/api/submit-form`,
+        `https://nonucure-bot.vercel.app/api/submit-form`,
         {
           formData: finalFormData,
           responses: finalResponses,
