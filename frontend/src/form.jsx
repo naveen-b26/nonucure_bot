@@ -868,7 +868,7 @@ function Form() {
       };
 
       const response = await axios.post(
-        `http://localhost:5000/api/submit-form`,
+        `https://nonucure-bot.verce.app/api/submit-form`,
         {
           formData: finalFormData,
           responses: finalResponses,
