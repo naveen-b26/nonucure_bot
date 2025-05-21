@@ -82,8 +82,6 @@ const useStore = create((set) => ({
         phone: "",
         age: "",
         gender: "",
-        date: "",
-    time: "",
         healthConcern: "",
         hairStage: "",
         dandruff: "",

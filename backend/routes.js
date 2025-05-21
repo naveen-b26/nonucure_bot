@@ -37,20 +37,13 @@ router.post("/submit-form", async (req, res) => {
     const { gender, name, email, phone, age } = formData;
     let savedUser;
 
-    // Get current date and time
-    const now = new Date();
-    const date = now.toISOString().split('T')[0];
-    const time = now.toTimeString().split(' ')[0];
-
-    // Prepare user data with personal details and date/time
+    // Prepare user data without manual date/time
     const userData = {
       name,
       email,
       phone,
       age,
       gender,
-      date,
-      time,
       ...responses
     };
 
@@ -66,7 +59,6 @@ router.post("/submit-form", async (req, res) => {
       return res.status(400).json({ error: "Invalid gender specified" });
     }
 
-    // Store the user ID in the store for later use
     res.status(200).json({
       message: "Form submitted successfully",
       userId: savedUser._id,
@@ -306,19 +298,30 @@ router.post('/users', async (req, res) => {
       const [hours, minutes] = startTime.split(':');
       start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     } else {
-      start.setHours(0, 0, 0, 0); // Start of day if no time specified
+      start.setHours(0, 0, 0, 0);
     }
 
     if (endTime) {
       const [hours, minutes] = endTime.split(':');
       end.setHours(parseInt(hours), parseInt(minutes), 59, 999);
     } else {
-      end.setHours(23, 59, 59, 999); // End of day if no time specified
+      end.setHours(23, 59, 59, 999);
     }
 
-    // Fetch Male and Female Users
-    const maleUsers = await MaleUser.find({ createdAt: { $gte: start, $lte: end } });
-    const femaleUsers = await FemaleUser.find({ createdAt: { $gte: start, $lte: end } });
+    // Update queries to use createdAt
+    const maleUsers = await MaleUser.find({
+      createdAt: { 
+        $gte: start, 
+        $lte: end 
+      }
+    }).sort({ createdAt: -1 });
+
+    const femaleUsers = await FemaleUser.find({
+      createdAt: { 
+        $gte: start, 
+        $lte: end 
+      }
+    }).sort({ createdAt: -1 });
 
     // Fetch Recommendations
     const maleUserIds = maleUsers.map(user => user._id);
