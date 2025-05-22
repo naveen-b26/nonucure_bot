@@ -32,6 +32,7 @@ import finibis from "./pics/finibis.png"
 import finasteride from "./pics/finasteride.jpg"
 import { motion } from "framer-motion";
 import { RocketLaunchIcon, StarIcon, LockClosedIcon } from '@heroicons/react/24/solid';
+import DoctorConsultation from "./doctorConsultation";
 
 const RECOVERY_PERCENTAGE = 98;
 const TIMELINE_MONTHS = "3-4";
@@ -127,22 +128,89 @@ const UnlockDialog = ({ isOpen, closeModal }) => (
 
 // Update the MoneyBackGuarantee component to include the name
 const MoneyBackGuarantee = ({ userName }) => (
-  <div className="bg-gray-50 w-full  shadow-sm rounded-lg p-6 text-center mb-4">
-    <div className="flex justify-center mb-4">
-      <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z"/>
-      </svg>
-    </div>
-    <h3 className="text-xl text-gray-700 mb-2">
-      {userName}, we've got you covered!
-    </h3>
-    <p className="text-2xl font-bold text-gray-800 mb-4">
-      If the solution doesn't work out, we'll refund your money.
-    </p>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="bg-white shadow-lg rounded-xl p-8 text-center mb-6 max-w-3xl mx-auto border border-[#FFC9BD]/20"
+  >
+    <div className="flex flex-col items-center">
+      {/* Shield Icon */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ 
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+          delay: 0.2 
+        }}
+        className="mb-6 bg-blue-400/10 p-4 rounded-full"
+      >
+        <svg 
+          className="w-12 h-12 text-blue-500" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      </motion.div>
 
-  </div>
+      {/* Heading */}
+      <motion.h3
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="text-2xl font-bold text-gray-800 mb-4"
+      >
+        Hey {userName}, You're Protected! 🛡️
+      </motion.h3>
+
+      {/* Main Text */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="space-y-4"
+      >
+        <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+          100% Money-Back Guarantee
+        </p>
+        <p className="text-gray-600 max-w-lg mx-auto">
+          If you don't see noticeable improvement in your hair health within 90 days, 
+          we'll refund your purchase. No questions asked.
+        </p>
+      </motion.div>
+
+      {/* Features Grid */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 text-sm"
+      >
+        {[
+          { icon: "✓", text: "90-Day Window" },
+          { icon: "💯", text: "Full Refund" },
+          { icon: "🔒", text: "No Questions Asked" },
+        ].map((item, index) => (
+          <div 
+            key={index}
+            className="bg-[#FFC9BD]/5 p-3 rounded-lg flex items-center justify-center space-x-2"
+          >
+            <span className="text-lg">{item.icon}</span>
+            <span className="text-gray-700 font-medium">{item.text}</span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  </motion.div>
 );
 
+// First create a new ProgressBar component with better styling
 const ProgressBar = () => {
   const [progress, setProgress] = useState(0);
 
@@ -150,18 +218,19 @@ const ProgressBar = () => {
     const timer = setTimeout(() => {
       setProgress(RECOVERY_PERCENTAGE);
     }, 500);
-
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="w-full bg-gray-200 rounded-full h-2">
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${progress}%` }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="bg-green-600 h-2 rounded-full"
-      />
+    <div className="relative w-full">
+      <div className="w-full bg-[#E8FAF0] rounded-full h-2">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="bg-[#00A362] h-2 rounded-full"
+        />
+      </div>
     </div>
   );
 };
@@ -369,27 +438,48 @@ const RecommendationPage = () => {
             </div>
           </div>
 
-          {/* Update the Recovery Timeline section with more personalization */}
-          <div className="mt-2 mb-6 bg-white shadow-sm rounded-lg p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Your Recovery Journey</h3>
+          {/* Update the Recovery Journey section in your main component */}
+          <div className="mt-8 bg-white rounded-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[#1E293B] text-xl font-semibold">Your Recovery Journey</h3>
               <span className="text-sm text-gray-500">Personalized for {formData.name}</span>
             </div>
-            <div className="space-y-4">
+            
+            <div className="space-y-6">
               <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Treatment Progress</span>
-                  <span className="font-medium">{RECOVERY_PERCENTAGE}%</span>
+                <div className="flex justify-between text-sm mb-3">
+                  <span className="text-gray-600">Treatment Progress</span>
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="font-medium text-[#00A362]"
+                  >
+                    {RECOVERY_PERCENTAGE}%
+                  </motion.span>
                 </div>
                 <ProgressBar />
               </div>
-              <div className="flex items-center justify-between text-sm">
+              
+              <div className="flex items-center justify-between">
                 <span className="text-gray-600">Expected Timeline:</span>
-                <span className="text-green-600 font-medium">{TIMELINE_MONTHS} months</span>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center"
+                >
+                  <span className="text-[#00A362] font-semibold">{TIMELINE_MONTHS}</span>
+                  <span className="text-gray-600 ml-1">months</span>
+                </motion.div>
               </div>
-              <p className="text-xs text-gray-500 italic mt-2">
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="bg-[#F8FAFC] rounded-lg p-3 text-xs text-gray-500 italic"
+              >
                 *Results may vary based on individual response to treatment
-              </p>
+              </motion.div>
             </div>
           </div>
 
@@ -762,6 +852,8 @@ const RecommendationPage = () => {
             </div>
           )}
 
+          {/* Add this line */}
+          
           {/* Back Button with improved styling */}
           <button
             onClick={() => navigate("/")}
@@ -772,8 +864,9 @@ const RecommendationPage = () => {
         </div>
 
      </div>
+       <DoctorConsultation />
        {/* Add MoneyBackGuarantee component */}
-       {recommendation && !recommendation.needsDoctor && (
+       {recommendation && (
              <MoneyBackGuarantee userName={formData.name} />
            )}
      </div>
