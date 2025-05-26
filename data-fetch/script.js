@@ -100,8 +100,9 @@ function populateTable(data, genderFilter) {
         });
     };
 
-    // Sort users by name
-    users.sort((a, b) => a.name.localeCompare(b.name));
+ 
+users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
 
     // Populate users
     users.forEach(user => {
@@ -163,7 +164,7 @@ function downloadList() {
     // Prepare male users data with improved formatting
     const maleUsers = (fetchedData.maleUsers || []).map(user => {
         const recommendation = fetchedData.maleRecommendations?.find(rec => rec.userId === user._id) || {};
-        return {
+        return {    
             Name: user.name || 'N/A',
             Email: user.email || 'N/A',
             Phone: user.phone || 'N/A',
