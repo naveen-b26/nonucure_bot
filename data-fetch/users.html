@@ -4,218 +4,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Recommendations</title>
+    <title>User Recommendations Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #E0E7FF;
+            --success-color: #059669;
+            --male-color: rgba(79, 70, 229, 0.1);
+            --female-color: rgba(236, 72, 153, 0.1);
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #F3F4F6;
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: #1F2937;
         }
 
         .container {
             max-width: 100%;
             margin: auto;
-
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 2.2em;
-        }
-
-        table {
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-            border-right: 1px solid #dee2e6;
-        }
-
-        th:last-child, td:last-child {
-            border-right: none;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #2c3e50;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        tr:hover {
-            background-color: #f8f9fa;
-            transition: background-color 0.2s ease;
+            color: #111827;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
         }
 
         .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #F9FAFB;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
         }
 
         .date-time-group {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .date-time-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
         }
 
         .controls input,
         .controls select {
-            padding: 10px 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 0.75rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .controls input:focus,
+        .controls select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .controls button {
-            padding: 10px 20px;
-            background-color: #007bff;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 0.5rem;
             font-weight: 500;
-            transition: background-color 0.2s ease;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: 2.5rem;
+            top:12px ;
+            position: relative;
         }
 
         .controls button:hover {
-            background-color: #0056b3;
+            background-color: #4338CA;
+            transform: translateY(-1px);
+        }
+
+        #downloadButton {
+            background-color: var(--success-color);
+        }
+
+        #downloadButton:hover {
+            background-color: #047857;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 0.875rem;
+        }
+
+        th {
+            background-color: #F9FAFB;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tbody tr:hover {
+            background-color: #F9FAFB;
         }
 
         .male-column {
-            background-color: rgba(0, 123, 255, 0.05);
-        }
-
-        .male-column:nth-child(even) {
-            background-color: rgba(0, 123, 255, 0.08);
+            background-color: var(--male-color);
         }
 
         .female-column {
-            background-color: rgba(255, 182, 193, 0.05);
+            background-color: var(--female-color);
         }
 
-        .female-column:nth-child(even) {
-            background-color: rgba(255, 182, 193, 0.08);
-        }
-
-        .hidden-column {
-            display: none;
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            border: 1px solid #E5E7EB;
+            margin-top: 1rem;
         }
 
         @media (max-width: 1200px) {
             .container {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 14px;
-            }
-
-            th, td {
-                padding: 8px;
+                padding: 1rem;
             }
 
             .controls {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
+                grid-template-columns: 1fr;
             }
 
-            .date-time-group {
-                flex-direction: column;
+            th, td {
+                padding: 0.75rem;
+                font-size: 0.813rem;
             }
+        }
+
+        /* Custom scrollbar */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #D1D5DB;
+            border-radius: 20px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>User Recommendations</h1>
+        <h1>User Recommendations Dashboard</h1>
         <div class="controls">
             <div class="date-time-group">
+                <label for="startDate">Start Date</label>
                 <input type="date" id="startDate" required>
                 <input type="time" id="startTime">
             </div>
             <div class="date-time-group">
+                <label for="endDate">End Date</label>
                 <input type="date" id="endDate" required>
                 <input type="time" id="endTime">
             </div>
-            <select id="genderFilter">
-                <option value="">---Select Gender---</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-            <button id="fetchButton">Fetch Users</button>
-            <button id="downloadButton">Download List</button>
+            <div class="date-time-group">
+                <label for="genderFilter">Filter by Gender</label>
+                <select id="genderFilter">
+                    <option value=""> -- set gender -- </option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <button id="fetchButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                Fetch Users
+            </button>
+            <button id="downloadButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a1 1 0 0 1 1 1v6h1.5a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 7H7V1a1 1 0 0 1 1-1zm-2 13.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-1 0v2.5H4V10a.5.5 0 0 0-1 0v3z"/>
+                </svg>
+                Download List
+            </button>
         </div>
-        <table id="usersTable">
-            <thead>
-                <tr>
-                    <!-- Common columns -->
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Age</th>
-                    <th>Gender</th>
-                    <th>Health Concern</th>
-                    
-                    <!-- Male specific columns -->
-                    <th class="male-column">Hair Stage</th>
-                    <th class="male-column">Dandruff</th>
-                    <th class="male-column">Dandruff Stage</th>
-                    <th class="male-column">Thinning/Bald Spots</th>
-                    <th class="male-column">Energy Levels</th>
-                    <th class="male-column">Severe Illness</th>
-                    <th class="male-column">Hair Loss Genetic</th>
-                    <th class="male-column">Stress Level</th>
-                    <th class="male-column">Sleep Quality</th>
-                    <th class="male-column">Planning for Baby</th>
-                    
-                    <!-- Female specific columns -->
-                    <th class="female-column">Hair Stage</th>
-                    <th class="female-column">Dandruff</th>
-                    <th class="female-column">Dandruff Stage</th>
-                    <th class="female-column">Pregnancy Status</th>
-                    <th class="female-column">Natural Hair</th>
-                    <th class="female-column">Goal</th>
-                    <th class="female-column">Hair Fall</th>
-                    <th class="female-column">Genetic</th>
-                    <th class="female-column">Stress Level</th>
-                    
-                    <!-- Common final columns -->
-                    <th>Medical Conditions</th>
-                    <th>Recommended Kit</th>
-                    <th>Products</th>
-                    <th>Created At</th>
-                </tr>
-            </thead>
-            <tbody id="usersBody">
-                <!-- User data will be populated here -->
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <!-- Common columns -->
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Health Concern</th>
+                        
+                        <!-- Male specific columns -->
+                        <th class="male-column">Hair Stage</th>
+                        <th class="male-column">Dandruff</th>
+                        <th class="male-column">Dandruff Stage</th>
+                        <th class="male-column">Thinning/Bald Spots</th>
+                        <th class="male-column">Energy Levels</th>
+                        <th class="male-column">Severe Illness</th>
+                        <th class="male-column">Hair Loss Genetic</th>
+                        <th class="male-column">Stress Level</th>
+                        <th class="male-column">Sleep Quality</th>
+                        <th class="male-column">Planning for Baby</th>
+                        
+                        <!-- Female specific columns -->
+                        <th class="female-column">Hair Stage</th>
+                        <th class="female-column">Dandruff</th>
+                        <th class="female-column">Dandruff Stage</th>
+                        <th class="female-column">Pregnancy Status</th>
+                        <th class="female-column">Natural Hair</th>
+                        <th class="female-column">Goal</th>
+                        <th class="female-column">Hair Fall</th>
+                        <th class="female-column">Genetic</th>
+                        <th class="female-column">Stress Level</th>
+                        
+                        <!-- Common final columns -->
+                        <th>Medical Conditions</th>
+                        <th>Recommended Kit</th>
+                        <th>Products</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                    <!-- User data will be populated here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="script.js"></script>
